@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{{ page.description | default: site.description }}" />
+    <link rel="stylesheet" href="{{ '/assets/handbook.css' | relative_url }}" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="{{ '/' | relative_url }}">
+          <span class="brand-mark">iOS</span>
+          <span class="brand-copy">
+            <strong>{{ site.title }}</strong>
+            <small>{{ site.description }}</small>
+          </span>
+        </a>
+        <nav class="site-links">
+          <a href="{{ '/' | relative_url }}">主手册</a>
+          <a href="{{ '/ios-algorithm-interview-handbook-answers' | relative_url }}">答案手册</a>
+          <a href="https://github.com/creeveliu/iOS-Algo">GitHub</a>
+        </nav>
+      </header>
+
+      <main class="layout-grid">
+        <aside class="sidebar">
+          <section class="sidebar-card">
+            <p class="sidebar-kicker">快速导航</p>
+            <div id="chapter-nav" class="chapter-nav"></div>
+          </section>
+          <section class="sidebar-card sidebar-card--muted">
+            <p class="sidebar-kicker">阅读建议</p>
+            <ul>
+              <li>先看主手册中的题目、示例和方法签名。</li>
+              <li>自己在 Xcode 写完后，再跳到答案手册对照。</li>
+              <li>优先吃透 Easy 和高频 Medium。</li>
+            </ul>
+          </section>
+        </aside>
+
+        <article class="content-card">
+          <header class="hero">
+            <p class="hero-kicker">{% if page.url == '/' %}Handbook{% else %}Answer Key{% endif %}</p>
+            <h1>{{ page.title }}</h1>
+            {% if page.description %}
+            <p class="hero-summary">{{ page.description }}</p>
+            {% endif %}
+          </header>
+
+          <section id="quick-index" class="quick-index"></section>
+
+          <div class="doc-content" id="doc-content">
+            {{ content }}
+          </div>
+        </article>
+      </main>
+    </div>
+
+    <script>
+      (() => {
+        const content = document.getElementById('doc-content');
+        const chapterNav = document.getElementById('chapter-nav');
+        const quickIndex = document.getElementById('quick-index');
+        if (!content || !chapterNav || !quickIndex) return;
+
+        const slugify = (text, index) => {
+          const ascii = text
+            .toLowerCase()
+            .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+          return `${ascii || 'section'}-${index}`;
+        };
+
+        const headings = [...content.querySelectorAll('h2, h3')];
+        headings.forEach((heading, index) => {
+          if (!heading.id) heading.id = slugify(heading.textContent.trim(), index);
+        });
+
+        const chapters = headings.filter((heading) => heading.tagName === 'H2');
+        if (chapters.length > 0) {
+          quickIndex.innerHTML = `
+            <div class="quick-index__header">
+              <p class="sidebar-kicker">章节目录</p>
+              <span>点击跳转</span>
+            </div>
+            <div class="quick-index__grid">
+              ${chapters
+                .map(
+                  (heading, index) => `
+                    <a class="quick-index__item" href="#${heading.id}">
+                      <span class="quick-index__num">${String(index).padStart(2, '0')}</span>
+                      <span>${heading.textContent}</span>
+                    </a>`
+                )
+                .join('')}
+            </div>`;
+        }
+
+        chapterNav.innerHTML = chapters
+          .map(
+            (heading) => `<a class="chapter-nav__link" href="#${heading.id}">${heading.textContent}</a>`
+          )
+          .join('');
+      })();
+    </script>
+  </body>
+</html>

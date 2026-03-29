@@ -1,4 +1,8 @@
-# iOS 工程师算法面试学习手册答案
+---
+layout: handbook
+title: iOS 工程师算法面试学习手册答案
+description: 与主手册配套的参考答案、Objective-C 实现和常见错误点。
+---
 
 > 对应题目主文件：
 > [index.md](./)

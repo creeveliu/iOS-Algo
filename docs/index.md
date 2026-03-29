@@ -1,4 +1,8 @@
-# iOS 工程师算法面试学习手册
+---
+layout: handbook
+title: iOS 工程师算法面试学习手册
+description: 适合熟练使用 Objective-C 的 iOS 工程师，按章节系统准备算法面试。
+---
 
 > 适合熟练使用 Objective-C 的 iOS 工程师
 > 目标：用难度适中的题目，系统覆盖面试必会算法知识点
