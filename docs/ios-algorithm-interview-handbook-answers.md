@@ -417,3 +417,481 @@ Objective-C 参考实现：
 - 只会哈希解法，却说不出更优的异或思路。
 - 没理解为什么异或能抵消成对元素。
 - 把“只出现一次”误读成“只出现奇数次”。
+
+---
+
+## 4.4 删除有序数组中的重复项
+
+为什么会想到这个解法：
+
+- 数组本身有序，重复元素一定相邻。
+- 所以不需要额外集合，只需要用慢指针维护“去重后结果的尾部”。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)removeDuplicates:(NSMutableArray<NSNumber *> *)nums {
+    if (nums.count == 0) {
+        return 0;
+    }
+
+    NSInteger slow = 1;
+    for (NSInteger fast = 1; fast < nums.count; fast++) {
+        if (![nums[fast] isEqualToNumber:nums[fast - 1]]) {
+            nums[slow] = nums[fast];
+            slow++;
+        }
+    }
+    return slow;
+}
+```
+
+常见错误点：
+
+- 忘了数组有序这个关键信息。
+- 从 `slow = 0` 开始导致边界混乱。
+- 没处理空数组。
+
+---
+
+## 4.5 移动零
+
+为什么会想到这个解法：
+
+- 题目要求保持非零元素相对顺序，所以不能随便交换。
+- 最稳的做法是先把所有非零元素往前覆盖，再把后面补零。
+
+Objective-C 参考实现：
+
+```objc
+- (void)moveZeroes:(NSMutableArray<NSNumber *> *)nums {
+    NSInteger slow = 0;
+    for (NSInteger fast = 0; fast < nums.count; fast++) {
+        if (nums[fast].integerValue != 0) {
+            nums[slow] = nums[fast];
+            slow++;
+        }
+    }
+
+    while (slow < nums.count) {
+        nums[slow] = @0;
+        slow++;
+    }
+}
+```
+
+常见错误点：
+
+- 直接交换导致相对顺序被破坏。
+- 只把非零元素往前挪了，却忘了后面补零。
+
+---
+
+## 4.6 盛最多水的容器
+
+为什么会想到这个解法：
+
+- 暴力枚举两条边是 O(n^2)。
+- 容器面积由短板决定，所以每次应该尝试移动更短的一边，才有可能获得更大面积。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)maxArea:(NSArray<NSNumber *> *)height {
+    NSInteger left = 0;
+    NSInteger right = height.count - 1;
+    NSInteger result = 0;
+
+    while (left < right) {
+        NSInteger h = MIN(height[left].integerValue, height[right].integerValue);
+        NSInteger w = right - left;
+        result = MAX(result, h * w);
+
+        if (height[left].integerValue < height[right].integerValue) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+
+    return result;
+}
+```
+
+常见错误点：
+
+- 不理解为什么总是移动较短边。
+- 把高度取成较高边，导致面积计算错误。
+
+---
+
+## 4.7 长度最小的子数组
+
+为什么会想到这个解法：
+
+- 题目要求连续子数组，且数组元素为正数，这正是滑动窗口的典型信号。
+- 因为全是正数，窗口右移时和只会增大，左移时和只会减小，窗口行为是单调的。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)minSubArrayLen:(NSInteger)target nums:(NSArray<NSNumber *> *)nums {
+    NSInteger left = 0;
+    NSInteger sum = 0;
+    NSInteger result = NSIntegerMax;
+
+    for (NSInteger right = 0; right < nums.count; right++) {
+        sum += nums[right].integerValue;
+        while (sum >= target) {
+            result = MIN(result, right - left + 1);
+            sum -= nums[left].integerValue;
+            left++;
+        }
+    }
+
+    return result == NSIntegerMax ? 0 : result;
+}
+```
+
+常见错误点：
+
+- 没注意数组元素都是正数，错过滑动窗口。
+- 窗口满足条件后没有继续收缩，导致不是最短长度。
+
+---
+
+## 5.5 反转链表
+
+为什么会想到这个解法：
+
+- 每次只需要让当前节点的 `next` 指向前一个节点。
+- 这是一个非常标准的三指针过程：`prev`、`cur`、`next`。
+
+Objective-C 参考实现：
+
+```objc
+- (ListNode *)reverseList:(ListNode *)head {
+    ListNode *prev = nil;
+    ListNode *cur = head;
+    while (cur) {
+        ListNode *next = cur.next;
+        cur.next = prev;
+        prev = cur;
+        cur = next;
+    }
+    return prev;
+}
+```
+
+常见错误点：
+
+- 没先保存 `next` 就改指针，导致链表断掉。
+- 返回了旧头节点而不是新头节点 `prev`。
+
+---
+
+## 5.6 合并两个有序链表
+
+为什么会想到这个解法：
+
+- 两条链表都已经有序，所以和合并有序数组的思想类似。
+- 为了简化头节点处理，最稳的是用虚拟头节点。
+
+Objective-C 参考实现：
+
+```objc
+- (ListNode *)mergeTwoLists:(ListNode *)list1 list2:(ListNode *)list2 {
+    ListNode *dummy = [[ListNode alloc] initWithVal:0 next:nil];
+    ListNode *tail = dummy;
+
+    while (list1 && list2) {
+        if (list1.val <= list2.val) {
+            tail.next = list1;
+            list1 = list1.next;
+        } else {
+            tail.next = list2;
+            list2 = list2.next;
+        }
+        tail = tail.next;
+    }
+
+    tail.next = list1 ? list1 : list2;
+    return dummy.next;
+}
+```
+
+常见错误点：
+
+- 不用虚拟头节点，导致头节点分支很多。
+- 最后忘了接上剩余未处理链表。
+
+---
+
+## 5.7 删除链表的倒数第 N 个结点
+
+为什么会想到这个解法：
+
+- “倒数第 N 个”天然适合快慢指针。
+- 先让快指针走 `n` 步，再同步移动，直到快指针到尾部，此时慢指针正好停在待删除节点前一个位置。
+
+Objective-C 参考实现：
+
+```objc
+- (ListNode *)removeNthFromEnd:(ListNode *)head n:(NSInteger)n {
+    ListNode *dummy = [[ListNode alloc] initWithVal:0 next:head];
+    ListNode *fast = dummy;
+    ListNode *slow = dummy;
+
+    for (NSInteger i = 0; i < n; i++) {
+        fast = fast.next;
+    }
+
+    while (fast.next) {
+        fast = fast.next;
+        slow = slow.next;
+    }
+
+    slow.next = slow.next.next;
+    return dummy.next;
+}
+```
+
+常见错误点：
+
+- 不加虚拟头节点时，删除头节点会很麻烦。
+- 快指针步数差写错，导致删错节点。
+
+---
+
+## 5.8 环形链表
+
+为什么会想到这个解法：
+
+- 如果链表有环，快慢指针最终一定会相遇。
+- 如果链表无环，快指针会先到 `nil`。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)hasCycle:(ListNode *)head {
+    if (!head || !head.next) {
+        return NO;
+    }
+
+    ListNode *slow = head;
+    ListNode *fast = head;
+    while (fast && fast.next) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) {
+            return YES;
+        }
+    }
+    return NO;
+}
+```
+
+常见错误点：
+
+- 没判空就直接访问 `fast.next.next`。
+- 把节点值相等当成相遇，实际上应该比较节点指针本身。
+
+---
+
+## 6.4 有效的括号
+
+为什么会想到这个解法：
+
+- 括号配对天然适合栈。
+- 遇到左括号入栈，遇到右括号时检查栈顶是否匹配。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)isValid:(NSString *)s {
+    NSMutableArray<NSString *> *stack = [NSMutableArray array];
+    NSDictionary<NSString *, NSString *> *pairs = @{
+        @")": @"(",
+        @"]": @"[",
+        @"}": @"{"
+    };
+
+    for (NSInteger i = 0; i < s.length; i++) {
+        unichar c = [s characterAtIndex:i];
+        NSString *ch = [NSString stringWithCharacters:&c length:1];
+        if ([ch isEqualToString:@"("] || [ch isEqualToString:@"["] || [ch isEqualToString:@"{"]) {
+            [stack addObject:ch];
+        } else {
+            if (stack.count == 0 || ![[stack lastObject] isEqualToString:pairs[ch]]) {
+                return NO;
+            }
+            [stack removeLastObject];
+        }
+    }
+
+    return stack.count == 0;
+}
+```
+
+常见错误点：
+
+- 右括号出现时没有先判断栈是否为空。
+- 最后忘了检查栈是否清空。
+
+---
+
+## 6.5 用栈实现队列
+
+为什么会想到这个解法：
+
+- 一个栈只能后进先出，但两个栈可以通过倒腾元素模拟先进先出。
+- `inStack` 负责入队，`outStack` 负责出队；只有在 `outStack` 空时才搬运。
+
+Objective-C 参考实现：
+
+```objc
+@interface MyQueue : NSObject
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *inStack;
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *outStack;
+@end
+
+@implementation MyQueue
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _inStack = [NSMutableArray array];
+        _outStack = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)moveIfNeeded {
+    if (self.outStack.count == 0) {
+        while (self.inStack.count > 0) {
+            [self.outStack addObject:self.inStack.lastObject];
+            [self.inStack removeLastObject];
+        }
+    }
+}
+
+- (void)push:(NSInteger)x {
+    [self.inStack addObject:@(x)];
+}
+
+- (NSInteger)pop {
+    [self moveIfNeeded];
+    NSInteger value = self.outStack.lastObject.integerValue;
+    [self.outStack removeLastObject];
+    return value;
+}
+
+- (NSInteger)peek {
+    [self moveIfNeeded];
+    return self.outStack.lastObject.integerValue;
+}
+
+- (BOOL)empty {
+    return self.inStack.count == 0 && self.outStack.count == 0;
+}
+
+@end
+```
+
+常见错误点：
+
+- 每次操作都搬运元素，虽然能做但不够优雅。
+- `peek` 和 `pop` 前忘了先把元素转移到 `outStack`。
+
+---
+
+## 6.6 最小栈
+
+为什么会想到这个解法：
+
+- 普通栈只能拿到栈顶，拿不到当前最小值。
+- 所以需要一个辅助栈，和主栈同步维护到当前位置为止的最小值。
+
+Objective-C 参考实现：
+
+```objc
+@interface MinStack : NSObject
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *stack;
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *minStack;
+@end
+
+@implementation MinStack
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _stack = [NSMutableArray array];
+        _minStack = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)push:(NSInteger)val {
+    [self.stack addObject:@(val)];
+    NSInteger currentMin = self.minStack.count == 0 ? val : MIN(val, self.minStack.lastObject.integerValue);
+    [self.minStack addObject:@(currentMin)];
+}
+
+- (void)pop {
+    [self.stack removeLastObject];
+    [self.minStack removeLastObject];
+}
+
+- (NSInteger)top {
+    return self.stack.lastObject.integerValue;
+}
+
+- (NSInteger)getMin {
+    return self.minStack.lastObject.integerValue;
+}
+
+@end
+```
+
+常见错误点：
+
+- 只在更小元素入栈时才更新最小栈，导致弹栈后最小值出错。
+- `pop` 时忘记同步弹出辅助栈。
+
+---
+
+## 6.7 每日温度
+
+为什么会想到这个解法：
+
+- 题目是在找“右边第一个更大元素”，这就是单调栈经典场景。
+- 栈里存下标，保持对应温度单调递减；一旦遇到更高温度，就把之前等待的人一次性结算。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSNumber *> *)dailyTemperatures:(NSArray<NSNumber *> *)temperatures {
+    NSMutableArray<NSNumber *> *result = [NSMutableArray array];
+    for (NSInteger i = 0; i < temperatures.count; i++) {
+        [result addObject:@0];
+    }
+
+    NSMutableArray<NSNumber *> *stack = [NSMutableArray array];
+    for (NSInteger i = 0; i < temperatures.count; i++) {
+        while (stack.count > 0 &&
+               temperatures[i].integerValue > temperatures[stack.lastObject.integerValue].integerValue) {
+            NSInteger idx = stack.lastObject.integerValue;
+            [stack removeLastObject];
+            result[idx] = @(i - idx);
+        }
+        [stack addObject:@(i)];
+    }
+
+    return result;
+}
+```
+
+常见错误点：
+
+- 栈里存温度而不是下标，后面没法算天数差。
+- 单调栈方向写反。

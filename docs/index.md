@@ -660,6 +660,29 @@ NSLog(@"single number = %ld", (long)result);
 - 有序数组
 - 快慢指针
 
+示例：
+
+- 输入：`nums = [1,1,2]`
+- 输出：`2`
+- 解释：前两个有效元素可视为 `[1,2]`
+
+方法名定义：
+
+```objc
+- (NSInteger)removeDuplicates:(NSMutableArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums = [@[@1, @1, @2] mutableCopy];
+NSInteger length = [self removeDuplicates:nums];
+NSLog(@"length = %ld", (long)length);
+NSLog(@"valid nums = %@", [nums subarrayWithRange:NSMakeRange(0, length)]);
+```
+
+参考答案：见 [答案手册 4.4 删除有序数组中的重复项](./ios-algorithm-interview-handbook-answers#44-删除有序数组中的重复项)
+
 ### 4.5 经典题：移动零
 
 题目描述：给定一个数组，把所有 `0` 移动到数组末尾，同时保持非零元素的相对顺序，要求尽量原地完成。
@@ -668,6 +691,27 @@ NSLog(@"single number = %ld", (long)result);
 
 - 原地覆盖
 - 保持相对顺序
+
+示例：
+
+- 输入：`nums = [0,1,0,3,12]`
+- 输出：`[1,3,12,0,0]`
+
+方法名定义：
+
+```objc
+- (void)moveZeroes:(NSMutableArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums = [@[@0, @1, @0, @3, @12] mutableCopy];
+[self moveZeroes:nums];
+NSLog(@"nums = %@", nums);
+```
+
+参考答案：见 [答案手册 4.5 移动零](./ios-algorithm-interview-handbook-answers#45-移动零)
 
 ### 4.6 经典题：盛最多水的容器
 
@@ -682,6 +726,27 @@ NSLog(@"single number = %ld", (long)result);
 
 - 总是移动较短的一边，因为移动较长的一边不会提高上界。
 
+示例：
+
+- 输入：`height = [1,8,6,2,5,4,8,3,7]`
+- 输出：`49`
+
+方法名定义：
+
+```objc
+- (NSInteger)maxArea:(NSArray<NSNumber *> *)height;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *height = @[@1, @8, @6, @2, @5, @4, @8, @3, @7];
+NSInteger area = [self maxArea:height];
+NSLog(@"max area = %ld", (long)area);
+```
+
+参考答案：见 [答案手册 4.6 盛最多水的容器](./ios-algorithm-interview-handbook-answers#46-盛最多水的容器)
+
 ### 4.7 经典题：长度最小的子数组
 
 题目描述：给定一个正整数数组和一个目标值 `target`，找出和大于等于 `target` 的最短连续子数组长度；如果不存在，返回 `0`。
@@ -690,6 +755,28 @@ NSLog(@"single number = %ld", (long)result);
 
 - 滑动窗口
 - 连续区间
+
+示例：
+
+- 输入：`target = 7, nums = [2,3,1,2,4,3]`
+- 输出：`2`
+- 解释：最短连续子数组是 `[4,3]`
+
+方法名定义：
+
+```objc
+- (NSInteger)minSubArrayLen:(NSInteger)target nums:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *nums = @[@2, @3, @1, @2, @4, @3];
+NSInteger length = [self minSubArrayLen:7 nums:nums];
+NSLog(@"min subarray length = %ld", (long)length);
+```
+
+参考答案：见 [答案手册 4.7 长度最小的子数组](./ios-algorithm-interview-handbook-answers#47-长度最小的子数组)
 
 ### 4.8 本章小结与模板整理
 
@@ -745,6 +832,29 @@ NSLog(@"single number = %ld", (long)result);
 - `cur`
 - `next`
 
+链表题最小节点定义：
+
+```objc
+@interface ListNode : NSObject
+@property (nonatomic, assign) NSInteger val;
+@property (nonatomic, strong, nullable) ListNode *next;
+- (instancetype)initWithVal:(NSInteger)val next:(ListNode * _Nullable)next;
+@end
+
+@implementation ListNode
+
+- (instancetype)initWithVal:(NSInteger)val next:(ListNode * _Nullable)next {
+    self = [super init];
+    if (self) {
+        _val = val;
+        _next = next;
+    }
+    return self;
+}
+
+@end
+```
+
 ### 5.5 经典题：反转链表
 
 题目描述：给定一个单链表的头节点 `head`，请将链表反转，并返回新的头节点。
@@ -753,6 +863,31 @@ NSLog(@"single number = %ld", (long)result);
 
 - 是很多链表题的基础子问题。
 - 能检验你对指针操作的掌握程度。
+
+示例：
+
+- 输入：`1 -> 2 -> 3 -> 4 -> 5`
+- 输出：`5 -> 4 -> 3 -> 2 -> 1`
+
+方法名定义：
+
+```objc
+- (ListNode *)reverseList:(ListNode *)head;
+```
+
+调用示例代码：
+
+```objc
+ListNode *n5 = [[ListNode alloc] initWithVal:5 next:nil];
+ListNode *n4 = [[ListNode alloc] initWithVal:4 next:n5];
+ListNode *n3 = [[ListNode alloc] initWithVal:3 next:n4];
+ListNode *n2 = [[ListNode alloc] initWithVal:2 next:n3];
+ListNode *head = [[ListNode alloc] initWithVal:1 next:n2];
+ListNode *newHead = [self reverseList:head];
+NSLog(@"new head = %ld", (long)newHead.val);
+```
+
+参考答案：见 [答案手册 5.5 反转链表](./ios-algorithm-interview-handbook-answers#55-反转链表)
 
 ### 5.6 经典题：合并两个有序链表
 
@@ -763,6 +898,34 @@ NSLog(@"single number = %ld", (long)result);
 - 虚拟头节点
 - 双指针
 
+示例：
+
+- 输入：`1 -> 2 -> 4` 和 `1 -> 3 -> 4`
+- 输出：`1 -> 1 -> 2 -> 3 -> 4 -> 4`
+
+方法名定义：
+
+```objc
+- (ListNode *)mergeTwoLists:(ListNode *)list1 list2:(ListNode *)list2;
+```
+
+调用示例代码：
+
+```objc
+ListNode *a3 = [[ListNode alloc] initWithVal:4 next:nil];
+ListNode *a2 = [[ListNode alloc] initWithVal:2 next:a3];
+ListNode *list1 = [[ListNode alloc] initWithVal:1 next:a2];
+
+ListNode *b3 = [[ListNode alloc] initWithVal:4 next:nil];
+ListNode *b2 = [[ListNode alloc] initWithVal:3 next:b3];
+ListNode *list2 = [[ListNode alloc] initWithVal:1 next:b2];
+
+ListNode *merged = [self mergeTwoLists:list1 list2:list2];
+NSLog(@"merged head = %ld", (long)merged.val);
+```
+
+参考答案：见 [答案手册 5.6 合并两个有序链表](./ios-algorithm-interview-handbook-answers#56-合并两个有序链表)
+
 ### 5.7 经典题：删除链表的倒数第 N 个结点
 
 题目描述：给定一个链表，删除链表的倒数第 `N` 个节点，并返回删除后的头节点。
@@ -772,6 +935,31 @@ NSLog(@"single number = %ld", (long)result);
 - 快慢指针
 - 虚拟头节点
 
+示例：
+
+- 输入：`1 -> 2 -> 3 -> 4 -> 5, n = 2`
+- 输出：`1 -> 2 -> 3 -> 5`
+
+方法名定义：
+
+```objc
+- (ListNode *)removeNthFromEnd:(ListNode *)head n:(NSInteger)n;
+```
+
+调用示例代码：
+
+```objc
+ListNode *n5 = [[ListNode alloc] initWithVal:5 next:nil];
+ListNode *n4 = [[ListNode alloc] initWithVal:4 next:n5];
+ListNode *n3 = [[ListNode alloc] initWithVal:3 next:n4];
+ListNode *n2 = [[ListNode alloc] initWithVal:2 next:n3];
+ListNode *head = [[ListNode alloc] initWithVal:1 next:n2];
+ListNode *newHead = [self removeNthFromEnd:head n:2];
+NSLog(@"head after remove = %ld", (long)newHead.val);
+```
+
+参考答案：见 [答案手册 5.7 删除链表的倒数第 N 个结点](./ios-algorithm-interview-handbook-answers#57-删除链表的倒数第-n-个结点)
+
 ### 5.8 经典题：环形链表
 
 题目描述：给定一个链表，判断链表中是否存在环。如果某个节点通过不断沿着 `next` 指针访问可以再次回到自己经过的节点，就说明有环。
@@ -779,6 +967,31 @@ NSLog(@"single number = %ld", (long)result);
 知识点：
 
 - 快慢指针判环
+
+示例：
+
+- 输入：`3 -> 2 -> 0 -> -4`，尾节点连接到值为 `2` 的节点
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)hasCycle:(ListNode *)head;
+```
+
+调用示例代码：
+
+```objc
+ListNode *n4 = [[ListNode alloc] initWithVal:-4 next:nil];
+ListNode *n3 = [[ListNode alloc] initWithVal:0 next:n4];
+ListNode *n2 = [[ListNode alloc] initWithVal:2 next:n3];
+ListNode *head = [[ListNode alloc] initWithVal:3 next:n2];
+n4.next = n2;
+BOOL hasCycle = [self hasCycle:head];
+NSLog(@"has cycle = %@", hasCycle ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 5.8 环形链表](./ios-algorithm-interview-handbook-answers#58-环形链表)
 
 ### 5.9 本章小结与模板整理
 
@@ -832,6 +1045,26 @@ NSLog(@"single number = %ld", (long)result);
 - 栈
 - 匹配关系
 
+示例：
+
+- 输入：`"()[]{}"`
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)isValid:(NSString *)s;
+```
+
+调用示例代码：
+
+```objc
+BOOL valid = [self isValid:@"()[]{}"];
+NSLog(@"valid = %@", valid ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 6.4 有效的括号](./ios-algorithm-interview-handbook-answers#64-有效的括号)
+
 ### 6.5 经典题：用栈实现队列
 
 题目描述：请仅使用两个栈来实现一个队列，支持入队、出队、查看队头和判断是否为空等基本操作。
@@ -840,6 +1073,35 @@ NSLog(@"single number = %ld", (long)result);
 
 - 双栈模拟
 - 数据流转
+
+示例：
+
+- 输入：依次执行 `push(1), push(2), peek(), pop(), empty()`
+- 输出：`2, 1, false`
+
+类定义：
+
+```objc
+@interface MyQueue : NSObject
+- (void)push:(NSInteger)x;
+- (NSInteger)pop;
+- (NSInteger)peek;
+- (BOOL)empty;
+@end
+```
+
+调用示例代码：
+
+```objc
+MyQueue *queue = [[MyQueue alloc] init];
+[queue push:1];
+[queue push:2];
+NSLog(@"peek = %ld", (long)[queue peek]);
+NSLog(@"pop = %ld", (long)[queue pop]);
+NSLog(@"empty = %@", [queue empty] ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 6.5 用栈实现队列](./ios-algorithm-interview-handbook-answers#65-用栈实现队列)
 
 ### 6.6 经典题：最小栈
 
@@ -850,6 +1112,37 @@ NSLog(@"single number = %ld", (long)result);
 - 辅助栈
 - 同步维护最小值
 
+示例：
+
+- 输入：依次执行 `push(-2), push(0), push(-3), getMin(), pop(), top(), getMin()`
+- 输出：`-3, 0, -2`
+
+类定义：
+
+```objc
+@interface MinStack : NSObject
+- (void)push:(NSInteger)val;
+- (void)pop;
+- (NSInteger)top;
+- (NSInteger)getMin;
+@end
+```
+
+调用示例代码：
+
+```objc
+MinStack *stack = [[MinStack alloc] init];
+[stack push:-2];
+[stack push:0];
+[stack push:-3];
+NSLog(@"min = %ld", (long)[stack getMin]);
+[stack pop];
+NSLog(@"top = %ld", (long)[stack top]);
+NSLog(@"min = %ld", (long)[stack getMin]);
+```
+
+参考答案：见 [答案手册 6.6 最小栈](./ios-algorithm-interview-handbook-answers#66-最小栈)
+
 ### 6.7 经典题：每日温度
 
 题目描述：给定一个整数数组 `temperatures`，表示每天的气温。请返回一个数组，`answer[i]` 表示从第 `i` 天开始还要等几天才会有更高的温度；如果之后都不会升高，就填 `0`。
@@ -858,6 +1151,27 @@ NSLog(@"single number = %ld", (long)result);
 
 - 单调栈
 - 等待下一个更大元素
+
+示例：
+
+- 输入：`temperatures = [73,74,75,71,69,72,76,73]`
+- 输出：`[1,1,4,2,1,1,0,0]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSNumber *> *)dailyTemperatures:(NSArray<NSNumber *> *)temperatures;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *temperatures = @[@73, @74, @75, @71, @69, @72, @76, @73];
+NSArray<NSNumber *> *result = [self dailyTemperatures:temperatures];
+NSLog(@"result = %@", result);
+```
+
+参考答案：见 [答案手册 6.7 每日温度](./ios-algorithm-interview-handbook-answers#67-每日温度)
 
 ### 6.8 本章小结与模板整理
 
