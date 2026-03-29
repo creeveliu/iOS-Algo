@@ -150,6 +150,44 @@
 - 遇到不等于目标值的元素，就写到慢指针位置。
 - 最后慢指针就是新数组长度。
 
+示例：
+
+- 输入：`nums = [3,2,2,3], val = 3`
+- 输出：`2`
+- 解释：新的有效数组可以视为 `[2,2]`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 题目要求“原地删除”，说明不适合新开一个结果数组。
+- 删除动作本质上可以转化成“把要保留的元素依次往前覆盖”。
+- 所以最自然的方式就是快慢指针：快指针读，慢指针写。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)removeElement:(NSMutableArray<NSNumber *> *)nums val:(NSInteger)val {
+    NSInteger slow = 0;
+    for (NSInteger fast = 0; fast < nums.count; fast++) {
+        if (nums[fast].integerValue != val) {
+            nums[slow] = nums[fast];
+            slow++;
+        }
+    }
+    return slow;
+}
+```
+
+常见错误点：
+
+- 把“删除”理解成频繁 `removeObjectAtIndex:`，这样会导致代码更复杂。
+- 忘了返回的是新长度，而不是新数组。
+- 没意识到数组后面的元素可以不管，只有前 `slow` 个元素才是有效结果。
+
+</details>
+
 ### 1.6 经典题：合并两个有序数组
 
 题目描述：给你两个有序整数数组 `nums1` 和 `nums2`，其中 `nums1` 末尾有足够空间容纳 `nums2`。请把 `nums2` 合并进 `nums1`，使合并后的 `nums1` 仍然有序。
@@ -165,6 +203,58 @@
 - 如果从前往后合并，会覆盖未处理数据。
 - 从后往前写，代码更稳。
 
+示例：
+
+- 输入：`nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3`
+- 输出：`[1,2,2,3,5,6]`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 两个数组本来就有序，优先想到双指针。
+- 但 `nums1` 前半部分有有效数据，如果从前往后写，会覆盖还没比较的元素。
+- 所以应该从后往前填，把较大的元素先放到末尾。
+
+Objective-C 参考实现：
+
+```objc
+- (void)merge:(NSMutableArray<NSNumber *> *)nums1
+            m:(NSInteger)m
+         nums2:(NSArray<NSNumber *> *)nums2
+            n:(NSInteger)n {
+    NSInteger i = m - 1;
+    NSInteger j = n - 1;
+    NSInteger k = m + n - 1;
+
+    while (i >= 0 && j >= 0) {
+        if (nums1[i].integerValue > nums2[j].integerValue) {
+            nums1[k] = nums1[i];
+            i--;
+        } else {
+            nums1[k] = nums2[j];
+            j--;
+        }
+        k--;
+    }
+
+    while (j >= 0) {
+        nums1[k] = nums2[j];
+        j--;
+        k--;
+    }
+}
+```
+
+常见错误点：
+
+- 从前往后合并导致未处理数据被覆盖。
+- 忘了 `nums2` 还有剩余元素时要继续拷贝。
+- 边界判断里把 `i >= 0`、`j >= 0` 写错。
+
+</details>
+
 ### 1.7 经典题：买卖股票的最佳时机
 
 题目描述：给定一个数组 `prices`，`prices[i]` 表示某只股票第 `i` 天的价格。你只能买入一次、卖出一次，并且卖出必须在买入之后，求最大利润。
@@ -178,6 +268,53 @@
 
 - 遍历时维护历史最低价格。
 - 用当前价格减去历史最低价格，更新最大利润。
+
+示例：
+
+- 输入：`prices = [7,1,5,3,6,4]`
+- 输出：`5`
+- 解释：第 2 天买入，第 5 天卖出，利润为 `6 - 1 = 5`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 只能买卖一次，所以不需要复杂状态。
+- 对于每一天，最优卖出收益取决于它前面出现过的最低买入价格。
+- 因此一边遍历一边维护“历史最低价”和“当前最大利润”就够了。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)maxProfit:(NSArray<NSNumber *> *)prices {
+    if (prices.count == 0) {
+        return 0;
+    }
+
+    NSInteger minPrice = prices[0].integerValue;
+    NSInteger maxProfit = 0;
+
+    for (NSInteger i = 1; i < prices.count; i++) {
+        NSInteger price = prices[i].integerValue;
+        if (price < minPrice) {
+            minPrice = price;
+        } else {
+            maxProfit = MAX(maxProfit, price - minPrice);
+        }
+    }
+
+    return maxProfit;
+}
+```
+
+常见错误点：
+
+- 忘了卖出必须在买入之后。
+- 把“全局最大值减全局最小值”当答案，这是错的，因为顺序可能不合法。
+- 没处理空数组。
+
+</details>
 
 ### 1.8 本章小结与模板整理
 
@@ -240,6 +377,66 @@
 - 遇到非字母数字字符时跳过。
 - 比较有效字符是否相等。
 
+示例：
+
+- 输入：`"A man, a plan, a canal: Panama"`
+- 输出：`true`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 回文问题天然适合左右双指针。
+- 题目明确说要忽略非字母数字字符，所以指针移动时需要先跳过无效字符。
+- 再配合统一大小写比较即可。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)isAlphaNumeric:(unichar)c {
+    return ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:c]);
+}
+
+- (BOOL)isPalindrome:(NSString *)s {
+    NSInteger left = 0;
+    NSInteger right = s.length - 1;
+
+    while (left < right) {
+        unichar lc = [s characterAtIndex:left];
+        unichar rc = [s characterAtIndex:right];
+
+        if (![self isAlphaNumeric:lc]) {
+            left++;
+            continue;
+        }
+        if (![self isAlphaNumeric:rc]) {
+            right--;
+            continue;
+        }
+
+        NSString *ls = [[NSString stringWithCharacters:&lc length:1] lowercaseString];
+        NSString *rs = [[NSString stringWithCharacters:&rc length:1] lowercaseString];
+        if (![ls isEqualToString:rs]) {
+            return NO;
+        }
+
+        left++;
+        right--;
+    }
+
+    return YES;
+}
+```
+
+常见错误点：
+
+- 没有跳过空格、逗号等无效字符。
+- 忘了忽略大小写。
+- `right` 初始化和边界移动写错。
+
+</details>
+
 ### 2.5 经典题：最长公共前缀
 
 题目描述：给定一个字符串数组，找出这些字符串的最长公共前缀。如果不存在公共前缀，返回空字符串。
@@ -254,6 +451,50 @@
 - 先把第一个字符串当作前缀。
 - 逐个与后面的字符串比较，不断缩短前缀。
 
+示例：
+
+- 输入：`["flower","flow","flight"]`
+- 输出：`"fl"`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 所有字符串的公共前缀，一定不会比第一个字符串更长。
+- 所以可以先把第一个字符串当候选答案，再依次和后面的字符串比较。
+- 一旦不匹配，就缩短前缀，直到匹配或为空。
+
+Objective-C 参考实现：
+
+```objc
+- (NSString *)longestCommonPrefix:(NSArray<NSString *> *)strs {
+    if (strs.count == 0) {
+        return @"";
+    }
+
+    NSString *prefix = strs[0];
+    for (NSInteger i = 1; i < strs.count; i++) {
+        NSString *cur = strs[i];
+        while (![cur hasPrefix:prefix]) {
+            if (prefix.length == 0) {
+                return @"";
+            }
+            prefix = [prefix substringToIndex:prefix.length - 1];
+        }
+    }
+    return prefix;
+}
+```
+
+常见错误点：
+
+- 忽略空数组输入。
+- 当前缀已经缩短到空字符串时还继续截取。
+- 只比较前两个字符串，没有继续和后面的字符串收缩前缀。
+
+</details>
+
 ### 2.6 经典题：反转字符串
 
 题目描述：给定一个字符数组，请你原地将它反转，不能额外开辟一个同样大小的新数组。
@@ -263,6 +504,43 @@
 - 原地交换
 - 相向双指针
 
+示例：
+
+- 输入：`["h","e","l","l","o"]`
+- 输出：`["o","l","l","e","h"]`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 题目要求原地修改，最自然就是左右交换。
+- 每次交换最左和最右元素，然后双指针向中间收缩。
+
+Objective-C 参考实现：
+
+```objc
+- (void)reverseString:(NSMutableArray<NSString *> *)s {
+    NSInteger left = 0;
+    NSInteger right = s.count - 1;
+    while (left < right) {
+        NSString *tmp = s[left];
+        s[left] = s[right];
+        s[right] = tmp;
+        left++;
+        right--;
+    }
+}
+```
+
+常见错误点：
+
+- 额外创建新数组，偏离题目要求。
+- `left <= right` 导致中间元素被重复交换。
+- 没有真正原地交换。
+
+</details>
+
 ### 2.7 经典题：第一个唯一字符
 
 题目描述：给定一个字符串，找出第一个只出现一次的字符下标；如果不存在这样的字符，返回 `-1`。
@@ -271,6 +549,51 @@
 
 - 哈希计数
 - 二次遍历
+
+示例：
+
+- 输入：`"leetcode"`
+- 输出：`0`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- “第一个只出现一次”这类题，先统计频次再找位置最稳。
+- 第一次遍历做计数，第二次遍历按原顺序找到第一个频次为 1 的字符即可。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)firstUniqChar:(NSString *)s {
+    NSMutableDictionary<NSString *, NSNumber *> *count = [NSMutableDictionary dictionary];
+
+    for (NSInteger i = 0; i < s.length; i++) {
+        unichar c = [s characterAtIndex:i];
+        NSString *key = [NSString stringWithCharacters:&c length:1];
+        count[key] = @([count[key] integerValue] + 1);
+    }
+
+    for (NSInteger i = 0; i < s.length; i++) {
+        unichar c = [s characterAtIndex:i];
+        NSString *key = [NSString stringWithCharacters:&c length:1];
+        if ([count[key] integerValue] == 1) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+```
+
+常见错误点：
+
+- 只统计了频次，却忘了题目要的是“第一个”的下标。
+- 统计时字符转字符串的过程写乱。
+- 没有处理不存在唯一字符时返回 `-1`。
+
+</details>
 
 ### 2.8 本章小结与模板整理
 
@@ -324,6 +647,47 @@
 - 如果存在，直接返回结果。
 - 否则把当前值加入哈希表。
 
+示例：
+
+- 输入：`nums = [2,7,11,15], target = 9`
+- 输出：`[0,1]`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 暴力做法是双重循环，时间复杂度 O(n^2)。
+- 题目本质是在问：对于当前元素，另一个“补数”有没有出现过。
+- 这种“快速判断某值是否存在”的需求，天然适合哈希表。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSNumber *> *)twoSum:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSMutableDictionary<NSNumber *, NSNumber *> *map = [NSMutableDictionary dictionary];
+
+    for (NSInteger i = 0; i < nums.count; i++) {
+        NSInteger value = nums[i].integerValue;
+        NSNumber *need = @(target - value);
+        if (map[need] != nil) {
+            return @[map[need], @(i)];
+        }
+        map[@(value)] = @(i);
+    }
+
+    return @[];
+}
+```
+
+常见错误点：
+
+- 先把当前值放进哈希表，再查补数，可能误用同一个元素。
+- 返回的是值，不是下标。
+- 没理解题目默认只有一个答案，所以逻辑写得过于复杂。
+
+</details>
+
 ### 3.4 经典题：有效的字母异位词
 
 题目描述：给定两个字符串 `s` 和 `t`，判断 `t` 是否是 `s` 的字母异位词。也就是说，它们包含的字符种类和每种字符的数量都完全相同，只是顺序不同。
@@ -337,6 +701,56 @@
 - 统计第一个字符串每个字符出现次数。
 - 再用第二个字符串抵消。
 - 最后判断计数是否全部为 0。
+
+示例：
+
+- 输入：`s = "anagram", t = "nagaram"`
+- 输出：`true`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 异位词的本质不是顺序，而是“字符种类和频次完全一样”。
+- 所以最直接的办法就是做字符计数，然后比较统计结果。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)isAnagram:(NSString *)s t:(NSString *)t {
+    if (s.length != t.length) {
+        return NO;
+    }
+
+    NSMutableDictionary<NSString *, NSNumber *> *count = [NSMutableDictionary dictionary];
+    for (NSInteger i = 0; i < s.length; i++) {
+        unichar c = [s characterAtIndex:i];
+        NSString *key = [NSString stringWithCharacters:&c length:1];
+        count[key] = @([count[key] integerValue] + 1);
+    }
+
+    for (NSInteger i = 0; i < t.length; i++) {
+        unichar c = [t characterAtIndex:i];
+        NSString *key = [NSString stringWithCharacters:&c length:1];
+        NSInteger remain = [count[key] integerValue] - 1;
+        if (remain < 0) {
+            return NO;
+        }
+        count[key] = @(remain);
+    }
+
+    return YES;
+}
+```
+
+常见错误点：
+
+- 只比较字符集合，没有比较频次。
+- 长度不等时没有提前返回。
+- 计数减到负数时没有立即判错。
+
+</details>
 
 ### 3.5 经典题：存在重复元素
 
@@ -352,6 +766,41 @@
 - 如果元素已在集合中，返回 `YES`。
 - 否则加入集合。
 
+示例：
+
+- 输入：`[1,2,3,1]`
+- 输出：`true`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 题目只关心“有没有重复”，不关心具体重复次数。
+- 所以集合就够用了，只要看到某个元素已经出现过，就能立刻返回。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)containsDuplicate:(NSArray<NSNumber *> *)nums {
+    NSMutableSet<NSNumber *> *set = [NSMutableSet set];
+    for (NSNumber *num in nums) {
+        if ([set containsObject:num]) {
+            return YES;
+        }
+        [set addObject:num];
+    }
+    return NO;
+}
+```
+
+常见错误点：
+
+- 用字典或排序也能做，但没必要把简单题写复杂。
+- 忘了集合判重可以提前返回。
+
+</details>
+
 ### 3.6 经典题：只出现一次的数字
 
 题目描述：给定一个非空整数数组，除了某个元素只出现一次外，其余每个元素都出现两次。请找出那个只出现一次的元素。
@@ -362,6 +811,40 @@
 - 位运算异或
 
 面试时建议先说哈希，再补充异或是更优解。
+
+示例：
+
+- 输入：`[4,1,2,1,2]`
+- 输出：`4`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+为什么会想到这个解法：
+
+- 如果先求稳，可以直接哈希计数。
+- 但这题有一个非常经典的性质：相同数字异或两次会抵消，最终只剩那个单独出现的数。
+- 所以异或能把空间复杂度优化到 O(1)。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)singleNumber:(NSArray<NSNumber *> *)nums {
+    NSInteger result = 0;
+    for (NSNumber *num in nums) {
+        result ^= num.integerValue;
+    }
+    return result;
+}
+```
+
+常见错误点：
+
+- 只会哈希解法，却说不出更优的异或思路。
+- 没理解为什么异或能抵消成对元素。
+- 把“只出现一次”误读成“只出现奇数次”。
+
+</details>
 
 ### 3.7 本章小结与模板整理
 
@@ -1632,3 +2115,47 @@ for (NSInteger i = 1; i <= n; i++) {
 - 能把思路和工程经验讲清楚
 
 如果你按这份手册把题单至少过两轮，再配合模拟面试去练表达，已经足够覆盖绝大多数中初级到中高级 iOS 岗位的算法面试需求。
+
+---
+
+## 附录 C 手册阅读方式
+
+从下一版开始，手册里的题解内容会默认采用“题目展开，答案折叠”的写法，方便你先独立思考，再查看参考答案。
+
+示例格式如下：
+
+```markdown
+### 经典题：两数之和
+
+题目描述：给定一个整数数组 `nums` 和目标值 `target`，找出和为 `target` 的两个元素下标。
+
+示例：
+- 输入：`nums = [2,7,11,15], target = 9`
+- 输出：`[0,1]`
+
+<details>
+<summary>点击展开参考答案</summary>
+
+思路：
+- 用哈希表记录已经遍历过的元素和值对应下标。
+- 每次先看 `target - nums[i]` 是否已经出现。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSNumber *> *)twoSum:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSMutableDictionary<NSNumber *, NSNumber *> *map = [NSMutableDictionary dictionary];
+    for (NSInteger i = 0; i < nums.count; i++) {
+        NSInteger value = nums[i].integerValue;
+        NSNumber *need = @(target - value);
+        if (map[need]) {
+            return @[map[need], @(i)];
+        }
+        map[@(value)] = @(i);
+    }
+    return @[];
+}
+```
+
+</details>
+```
