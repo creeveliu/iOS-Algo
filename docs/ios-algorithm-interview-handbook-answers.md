@@ -13,6 +13,12 @@
 - 删除动作本质上可以转化成“把要保留的元素依次往前覆盖”。
 - 所以最自然的方式就是快慢指针：快指针读，慢指针写。
 
+方法名定义：
+
+```objc
+- (NSInteger)removeElement:(NSMutableArray<NSNumber *> *)nums val:(NSInteger)val;
+```
+
 Objective-C 参考实现：
 
 ```objc
@@ -26,6 +32,15 @@ Objective-C 参考实现：
     }
     return slow;
 }
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums = [@[@3, @2, @2, @3] mutableCopy];
+NSInteger length = [self removeElement:nums val:3];
+NSLog(@"length = %ld", (long)length);
+NSLog(@"valid nums = %@", [nums subarrayWithRange:NSMakeRange(0, length)]);
 ```
 
 常见错误点：
@@ -43,6 +58,15 @@ Objective-C 参考实现：
 - 两个数组本来就有序，优先想到双指针。
 - 但 `nums1` 前半部分有有效数据，如果从前往后写，会覆盖还没比较的元素。
 - 所以应该从后往前填，把较大的元素先放到末尾。
+
+方法名定义：
+
+```objc
+- (void)merge:(NSMutableArray<NSNumber *> *)nums1
+            m:(NSInteger)m
+         nums2:(NSArray<NSNumber *> *)nums2
+            n:(NSInteger)n;
+```
 
 Objective-C 参考实现：
 
@@ -74,6 +98,15 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums1 = [@[@1, @2, @3, @0, @0, @0] mutableCopy];
+NSArray<NSNumber *> *nums2 = @[@2, @5, @6];
+[self merge:nums1 m:3 nums2:nums2 n:3];
+NSLog(@"merged nums1 = %@", nums1);
+```
+
 常见错误点：
 
 - 从前往后合并导致未处理数据被覆盖。
@@ -89,6 +122,12 @@ Objective-C 参考实现：
 - 只能买卖一次，所以不需要复杂状态。
 - 对于每一天，最优卖出收益取决于它前面出现过的最低买入价格。
 - 因此一边遍历一边维护“历史最低价”和“当前最大利润”就够了。
+
+方法名定义：
+
+```objc
+- (NSInteger)maxProfit:(NSArray<NSNumber *> *)prices;
+```
 
 Objective-C 参考实现：
 
@@ -114,6 +153,14 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *prices = @[@7, @1, @5, @3, @6, @4];
+NSInteger profit = [self maxProfit:prices];
+NSLog(@"max profit = %ld", (long)profit);
+```
+
 常见错误点：
 
 - 忘了卖出必须在买入之后。
@@ -129,6 +176,12 @@ Objective-C 参考实现：
 - 回文问题天然适合左右双指针。
 - 题目明确说要忽略非字母数字字符，所以指针移动时需要先跳过无效字符。
 - 再配合统一大小写比较即可。
+
+方法名定义：
+
+```objc
+- (BOOL)isPalindrome:(NSString *)s;
+```
 
 Objective-C 参考实现：
 
@@ -168,6 +221,14 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSString *s = @"A man, a plan, a canal: Panama";
+BOOL result = [self isPalindrome:s];
+NSLog(@"is palindrome = %@", result ? @"YES" : @"NO");
+```
+
 常见错误点：
 
 - 没有跳过空格、逗号等无效字符。
@@ -183,6 +244,12 @@ Objective-C 参考实现：
 - 所有字符串的公共前缀，一定不会比第一个字符串更长。
 - 所以可以先把第一个字符串当候选答案，再依次和后面的字符串比较。
 - 一旦不匹配，就缩短前缀，直到匹配或为空。
+
+方法名定义：
+
+```objc
+- (NSString *)longestCommonPrefix:(NSArray<NSString *> *)strs;
+```
 
 Objective-C 参考实现：
 
@@ -206,6 +273,14 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSArray<NSString *> *strs = @[@"flower", @"flow", @"flight"];
+NSString *prefix = [self longestCommonPrefix:strs];
+NSLog(@"prefix = %@", prefix);
+```
+
 常见错误点：
 
 - 忽略空数组输入。
@@ -220,6 +295,12 @@ Objective-C 参考实现：
 
 - 题目要求原地修改，最自然就是左右交换。
 - 每次交换最左和最右元素，然后双指针向中间收缩。
+
+方法名定义：
+
+```objc
+- (void)reverseString:(NSMutableArray<NSString *> *)s;
+```
 
 Objective-C 参考实现：
 
@@ -237,6 +318,14 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSMutableArray<NSString *> *chars = [@[@"h", @"e", @"l", @"l", @"o"] mutableCopy];
+[self reverseString:chars];
+NSLog(@"reversed = %@", chars);
+```
+
 常见错误点：
 
 - 额外创建新数组，偏离题目要求。
@@ -251,6 +340,12 @@ Objective-C 参考实现：
 
 - “第一个只出现一次”这类题，先统计频次再找位置最稳。
 - 第一次遍历做计数，第二次遍历按原顺序找到第一个频次为 1 的字符即可。
+
+方法名定义：
+
+```objc
+- (NSInteger)firstUniqChar:(NSString *)s;
+```
 
 Objective-C 参考实现：
 
@@ -276,6 +371,14 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSString *s = @"leetcode";
+NSInteger index = [self firstUniqChar:s];
+NSLog(@"first unique index = %ld", (long)index);
+```
+
 常见错误点：
 
 - 只统计了频次，却忘了题目要的是“第一个”的下标。
@@ -291,6 +394,12 @@ Objective-C 参考实现：
 - 暴力做法是双重循环，时间复杂度 O(n^2)。
 - 题目本质是在问：对于当前元素，另一个“补数”有没有出现过。
 - 这种“快速判断某值是否存在”的需求，天然适合哈希表。
+
+方法名定义：
+
+```objc
+- (NSArray<NSNumber *> *)twoSum:(NSArray<NSNumber *> *)nums target:(NSInteger)target;
+```
 
 Objective-C 参考实现：
 
@@ -311,6 +420,14 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *nums = @[@2, @7, @11, @15];
+NSArray<NSNumber *> *result = [self twoSum:nums target:9];
+NSLog(@"two sum index = %@", result);
+```
+
 常见错误点：
 
 - 先把当前值放进哈希表，再查补数，可能误用同一个元素。
@@ -325,6 +442,12 @@ Objective-C 参考实现：
 
 - 异位词的本质不是顺序，而是“字符种类和频次完全一样”。
 - 所以最直接的办法就是做字符计数，然后比较统计结果。
+
+方法名定义：
+
+```objc
+- (BOOL)isAnagram:(NSString *)s t:(NSString *)t;
+```
 
 Objective-C 参考实现：
 
@@ -355,6 +478,13 @@ Objective-C 参考实现：
 }
 ```
 
+调用示例代码：
+
+```objc
+BOOL result = [self isAnagram:@"anagram" t:@"nagaram"];
+NSLog(@"is anagram = %@", result ? @"YES" : @"NO");
+```
+
 常见错误点：
 
 - 只比较字符集合，没有比较频次。
@@ -370,6 +500,12 @@ Objective-C 参考实现：
 - 题目只关心“有没有重复”，不关心具体重复次数。
 - 所以集合就够用了，只要看到某个元素已经出现过，就能立刻返回。
 
+方法名定义：
+
+```objc
+- (BOOL)containsDuplicate:(NSArray<NSNumber *> *)nums;
+```
+
 Objective-C 参考实现：
 
 ```objc
@@ -383,6 +519,14 @@ Objective-C 参考实现：
     }
     return NO;
 }
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *nums = @[@1, @2, @3, @1];
+BOOL result = [self containsDuplicate:nums];
+NSLog(@"contains duplicate = %@", result ? @"YES" : @"NO");
 ```
 
 常见错误点：
@@ -400,6 +544,12 @@ Objective-C 参考实现：
 - 但这题有一个非常经典的性质：相同数字异或两次会抵消，最终只剩那个单独出现的数。
 - 所以异或能把空间复杂度优化到 O(1)。
 
+方法名定义：
+
+```objc
+- (NSInteger)singleNumber:(NSArray<NSNumber *> *)nums;
+```
+
 Objective-C 参考实现：
 
 ```objc
@@ -410,6 +560,14 @@ Objective-C 参考实现：
     }
     return result;
 }
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *nums = @[@4, @1, @2, @1, @2];
+NSInteger result = [self singleNumber:nums];
+NSLog(@"single number = %ld", (long)result);
 ```
 
 常见错误点：
