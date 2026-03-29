@@ -171,7 +171,7 @@ NSLog(@"length = %ld", (long)length);
 NSLog(@"valid nums = %@", [nums subarrayWithRange:NSMakeRange(0, length)]);
 ```
 
-参考答案：见 [答案手册 1.5 移除元素](./ios-algorithm-interview-handbook-answers.md#15-移除元素)
+参考答案：见 [答案手册 1.5 移除元素](./ios-algorithm-interview-handbook-answers#15-移除元素)
 
 ### 1.6 经典题：合并两个有序数组
 
@@ -211,7 +211,7 @@ NSArray<NSNumber *> *nums2 = @[@2, @5, @6];
 NSLog(@"merged nums1 = %@", nums1);
 ```
 
-参考答案：见 [答案手册 1.6 合并两个有序数组](./ios-algorithm-interview-handbook-answers.md#16-合并两个有序数组)
+参考答案：见 [答案手册 1.6 合并两个有序数组](./ios-algorithm-interview-handbook-answers#16-合并两个有序数组)
 
 ### 1.7 经典题：买卖股票的最佳时机
 
@@ -247,7 +247,7 @@ NSInteger profit = [self maxProfit:prices];
 NSLog(@"max profit = %ld", (long)profit);
 ```
 
-参考答案：见 [答案手册 1.7 买卖股票的最佳时机](./ios-algorithm-interview-handbook-answers.md#17-买卖股票的最佳时机)
+参考答案：见 [答案手册 1.7 买卖股票的最佳时机](./ios-algorithm-interview-handbook-answers#17-买卖股票的最佳时机)
 
 ### 1.8 本章小结与模板整理
 
@@ -329,7 +329,7 @@ BOOL result = [self isPalindrome:s];
 NSLog(@"is palindrome = %@", result ? @"YES" : @"NO");
 ```
 
-参考答案：见 [答案手册 2.4 验证回文串](./ios-algorithm-interview-handbook-answers.md#24-验证回文串)
+参考答案：见 [答案手册 2.4 验证回文串](./ios-algorithm-interview-handbook-answers#24-验证回文串)
 
 ### 2.5 经典题：最长公共前缀
 
@@ -364,7 +364,7 @@ NSString *prefix = [self longestCommonPrefix:strs];
 NSLog(@"prefix = %@", prefix);
 ```
 
-参考答案：见 [答案手册 2.5 最长公共前缀](./ios-algorithm-interview-handbook-answers.md#25-最长公共前缀)
+参考答案：见 [答案手册 2.5 最长公共前缀](./ios-algorithm-interview-handbook-answers#25-最长公共前缀)
 
 ### 2.6 经典题：反转字符串
 
@@ -394,7 +394,7 @@ NSMutableArray<NSString *> *chars = [@[@"h", @"e", @"l", @"l", @"o"] mutableCopy
 NSLog(@"reversed = %@", chars);
 ```
 
-参考答案：见 [答案手册 2.6 反转字符串](./ios-algorithm-interview-handbook-answers.md#26-反转字符串)
+参考答案：见 [答案手册 2.6 反转字符串](./ios-algorithm-interview-handbook-answers#26-反转字符串)
 
 ### 2.7 经典题：第一个唯一字符
 
@@ -424,7 +424,7 @@ NSInteger index = [self firstUniqChar:s];
 NSLog(@"first unique index = %ld", (long)index);
 ```
 
-参考答案：见 [答案手册 2.7 第一个唯一字符](./ios-algorithm-interview-handbook-answers.md#27-第一个唯一字符)
+参考答案：见 [答案手册 2.7 第一个唯一字符](./ios-algorithm-interview-handbook-answers#27-第一个唯一字符)
 
 ### 2.8 本章小结与模板整理
 
@@ -497,7 +497,7 @@ NSArray<NSNumber *> *result = [self twoSum:nums target:9];
 NSLog(@"two sum index = %@", result);
 ```
 
-参考答案：见 [答案手册 3.3 两数之和](./ios-algorithm-interview-handbook-answers.md#33-两数之和)
+参考答案：见 [答案手册 3.3 两数之和](./ios-algorithm-interview-handbook-answers#33-两数之和)
 
 ### 3.4 经典题：有效的字母异位词
 
@@ -531,7 +531,7 @@ BOOL result = [self isAnagram:@"anagram" t:@"nagaram"];
 NSLog(@"is anagram = %@", result ? @"YES" : @"NO");
 ```
 
-参考答案：见 [答案手册 3.4 有效的字母异位词](./ios-algorithm-interview-handbook-answers.md#34-有效的字母异位词)
+参考答案：见 [答案手册 3.4 有效的字母异位词](./ios-algorithm-interview-handbook-answers#34-有效的字母异位词)
 
 ### 3.5 经典题：存在重复元素
 
@@ -566,7 +566,7 @@ BOOL result = [self containsDuplicate:nums];
 NSLog(@"contains duplicate = %@", result ? @"YES" : @"NO");
 ```
 
-参考答案：见 [答案手册 3.5 存在重复元素](./ios-algorithm-interview-handbook-answers.md#35-存在重复元素)
+参考答案：见 [答案手册 3.5 存在重复元素](./ios-algorithm-interview-handbook-answers#35-存在重复元素)
 
 ### 3.6 经典题：只出现一次的数字
 
@@ -598,7 +598,7 @@ NSInteger result = [self singleNumber:nums];
 NSLog(@"single number = %ld", (long)result);
 ```
 
-参考答案：见 [答案手册 3.6 只出现一次的数字](./ios-algorithm-interview-handbook-answers.md#36-只出现一次的数字)
+参考答案：见 [答案手册 3.6 只出现一次的数字](./ios-algorithm-interview-handbook-answers#36-只出现一次的数字)
 
 ### 3.7 本章小结与模板整理
 
@@ -1892,5 +1892,5 @@ for (NSInteger i = 1; i <= n; i++) {
 - 输入：`nums = [2,7,11,15], target = 9`
 - 输出：`[0,1]`
 
-参考答案：见 [答案手册中的对应题目](./ios-algorithm-interview-handbook-answers.md#33-两数之和)
+参考答案：见 [答案手册中的对应题目](./ios-algorithm-interview-handbook-answers#33-两数之和)
 ```

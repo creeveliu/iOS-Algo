@@ -1,7 +1,7 @@
 # iOS 工程师算法面试学习手册答案
 
 > 对应题目主文件：
-> [ios-algorithm-interview-course-outline.md](./ios-algorithm-interview-course-outline.md)
+> [index.md](./)
 
 ---
 

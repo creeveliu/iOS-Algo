@@ -1,0 +1,9 @@
+title: iOS 算法面试手册
+description: Objective-C / iOS 工程师算法面试学习手册
+theme: minima
+markdown: kramdown
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
