@@ -899,3 +899,1119 @@ Objective-C 参考实现：
 
 - 栈里存温度而不是下标，后面没法算天数差。
 - 单调栈方向写反。
+
+---
+
+## 7.5 二叉树的最大深度
+
+为什么会想到这个解法：
+
+- 题目要求从根到叶的最大层数，这天然适合递归定义。
+- 一棵树的最大深度就是 `max(左子树深度, 右子树深度) + 1`。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)maxDepth:(TreeNode *)root {
+    if (!root) {
+        return 0;
+    }
+    return MAX([self maxDepth:root.left], [self maxDepth:root.right]) + 1;
+}
+```
+
+常见错误点：
+
+- 把节点数和边数混淆。
+- 忘了空树深度应该是 `0`。
+
+---
+
+## 7.6 对称二叉树
+
+为什么会想到这个解法：
+
+- 对称不是比较一棵子树自己，而是同时比较左右两棵子树是否互为镜像。
+- 所以需要一个辅助函数，传入两棵树来比较。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)isMirror:(TreeNode *)left right:(TreeNode *)right {
+    if (!left && !right) {
+        return YES;
+    }
+    if (!left || !right || left.val != right.val) {
+        return NO;
+    }
+    return [self isMirror:left.left right:right.right] &&
+           [self isMirror:left.right right:right.left];
+}
+
+- (BOOL)isSymmetric:(TreeNode *)root {
+    if (!root) {
+        return YES;
+    }
+    return [self isMirror:root.left right:root.right];
+}
+```
+
+常见错误点：
+
+- 只比较了左右子树根节点值，没有继续递归比较镜像结构。
+- 把 `left.left` 错写成和 `right.left` 比较。
+
+---
+
+## 7.7 二叉树的层序遍历
+
+为什么会想到这个解法：
+
+- “逐层返回”就是 BFS 的典型关键词。
+- 用队列按层推进，每次先记录当前层节点数，再处理这一层。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)levelOrder:(TreeNode *)root {
+    if (!root) {
+        return @[];
+    }
+
+    NSMutableArray<NSArray<NSNumber *> *> *result = [NSMutableArray array];
+    NSMutableArray<TreeNode *> *queue = [NSMutableArray arrayWithObject:root];
+
+    while (queue.count > 0) {
+        NSInteger size = queue.count;
+        NSMutableArray<NSNumber *> *level = [NSMutableArray array];
+        for (NSInteger i = 0; i < size; i++) {
+            TreeNode *node = queue.firstObject;
+            [queue removeObjectAtIndex:0];
+            [level addObject:@(node.val)];
+            if (node.left) [queue addObject:node.left];
+            if (node.right) [queue addObject:node.right];
+        }
+        [result addObject:[level copy]];
+    }
+
+    return result;
+}
+```
+
+常见错误点：
+
+- 没按层记录 `size`，导致结果不是逐层分组。
+- 直接把 `NSMutableArray` 当高性能队列使用时忽略了头删开销，不过面试里通常可接受。
+
+---
+
+## 7.8 翻转二叉树
+
+为什么会想到这个解法：
+
+- 题目本质就是对每个节点交换左右孩子。
+- 递归写法最直接，先交换当前节点，再递归处理子树。
+
+Objective-C 参考实现：
+
+```objc
+- (TreeNode *)invertTree:(TreeNode *)root {
+    if (!root) {
+        return nil;
+    }
+    TreeNode *tmp = root.left;
+    root.left = root.right;
+    root.right = tmp;
+    [self invertTree:root.left];
+    [self invertTree:root.right];
+    return root;
+}
+```
+
+常见错误点：
+
+- 交换后又按旧引用递归，逻辑搞乱。
+- 漏掉空节点判断。
+
+---
+
+## 8.4 验证二叉搜索树
+
+为什么会想到这个解法：
+
+- BST 最经典的性质就是中序遍历严格递增。
+- 所以可以用中序遍历，判断当前值是否始终大于前一个值。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)inorder:(TreeNode *)root prev:(NSNumber * __strong *)prev {
+    if (!root) {
+        return YES;
+    }
+    if (![self inorder:root.left prev:prev]) {
+        return NO;
+    }
+    if (*prev && root.val <= (*prev).integerValue) {
+        return NO;
+    }
+    *prev = @(root.val);
+    return [self inorder:root.right prev:prev];
+}
+
+- (BOOL)isValidBST:(TreeNode *)root {
+    NSNumber *prev = nil;
+    return [self inorder:root prev:&prev];
+}
+```
+
+常见错误点：
+
+- 只比较父子节点大小，而不是整个子树范围。
+- 用 `>=` / `<=` 条件写错，导致重复值判断失误。
+
+---
+
+## 8.5 二叉搜索树中的搜索
+
+为什么会想到这个解法：
+
+- BST 左小右大，所以每一步都可以剪枝，不必遍历整棵树。
+
+Objective-C 参考实现：
+
+```objc
+- (TreeNode *)searchBST:(TreeNode *)root val:(NSInteger)val {
+    if (!root || root.val == val) {
+        return root;
+    }
+    if (val < root.val) {
+        return [self searchBST:root.left val:val];
+    }
+    return [self searchBST:root.right val:val];
+}
+```
+
+常见错误点：
+
+- 没利用 BST 性质，退化成整树遍历。
+
+---
+
+## 8.6 路径总和
+
+为什么会想到这个解法：
+
+- 从根到叶路径和，很适合每走一层就把目标值减掉当前节点值。
+- 到叶子节点时判断剩余值是否刚好为 0。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)hasPathSum:(TreeNode *)root targetSum:(NSInteger)targetSum {
+    if (!root) {
+        return NO;
+    }
+    if (!root.left && !root.right) {
+        return targetSum == root.val;
+    }
+    NSInteger remain = targetSum - root.val;
+    return [self hasPathSum:root.left targetSum:remain] ||
+           [self hasPathSum:root.right targetSum:remain];
+}
+```
+
+常见错误点：
+
+- 还没到叶子节点就提前返回。
+- 忘了题目要求必须是“从根到叶”。
+
+---
+
+## 8.7 二叉树的最近公共祖先
+
+为什么会想到这个解法：
+
+- 如果 `p` 和 `q` 分别在左右子树，那么当前节点就是答案。
+- 如果它们都在同一边，就把那一边递归结果往上返回。
+
+Objective-C 参考实现：
+
+```objc
+- (TreeNode *)lowestCommonAncestor:(TreeNode *)root p:(TreeNode *)p q:(TreeNode *)q {
+    if (!root || root == p || root == q) {
+        return root;
+    }
+
+    TreeNode *left = [self lowestCommonAncestor:root.left p:p q:q];
+    TreeNode *right = [self lowestCommonAncestor:root.right p:p q:q];
+
+    if (left && right) {
+        return root;
+    }
+    return left ? left : right;
+}
+```
+
+常见错误点：
+
+- 把“最近公共祖先”理解成值最小或层级最低的公共节点。
+- 找到一个目标节点后没正确向上返回。
+
+---
+
+## 9.4 子集
+
+为什么会想到这个解法：
+
+- 子集问题就是典型回溯，每个元素都面临“选或不选”。
+- 每到一个节点，当前路径本身就是一个合法答案。
+
+Objective-C 参考实现：
+
+```objc
+- (void)dfsSubsets:(NSArray<NSNumber *> *)nums
+             index:(NSInteger)index
+              path:(NSMutableArray<NSNumber *> *)path
+            result:(NSMutableArray<NSArray<NSNumber *> *> *)result {
+    [result addObject:[path copy]];
+    for (NSInteger i = index; i < nums.count; i++) {
+        [path addObject:nums[i]];
+        [self dfsSubsets:nums index:i + 1 path:path result:result];
+        [path removeLastObject];
+    }
+}
+
+- (NSArray<NSArray<NSNumber *> *> *)subsets:(NSArray<NSNumber *> *)nums {
+    NSMutableArray *result = [NSMutableArray array];
+    [self dfsSubsets:nums index:0 path:[NSMutableArray array] result:result];
+    return result;
+}
+```
+
+常见错误点：
+
+- 忘了每一层都要先收集当前路径。
+- 回溯结束后忘记 `removeLastObject`。
+
+---
+
+## 9.5 全排列
+
+为什么会想到这个解法：
+
+- 全排列要求每个位置都尝试所有还没用过的数。
+- 所以需要一个 `used` 数组或集合来记录哪些数已经放进路径。
+
+Objective-C 参考实现：
+
+```objc
+- (void)dfsPermute:(NSArray<NSNumber *> *)nums
+              path:(NSMutableArray<NSNumber *> *)path
+              used:(NSMutableArray<NSNumber *> *)used
+            result:(NSMutableArray<NSArray<NSNumber *> *> *)result {
+    if (path.count == nums.count) {
+        [result addObject:[path copy]];
+        return;
+    }
+    for (NSInteger i = 0; i < nums.count; i++) {
+        if (used[i].boolValue) {
+            continue;
+        }
+        used[i] = @YES;
+        [path addObject:nums[i]];
+        [self dfsPermute:nums path:path used:used result:result];
+        [path removeLastObject];
+        used[i] = @NO;
+    }
+}
+
+- (NSArray<NSArray<NSNumber *> *> *)permute:(NSArray<NSNumber *> *)nums {
+    NSMutableArray *used = [NSMutableArray array];
+    for (NSInteger i = 0; i < nums.count; i++) {
+        [used addObject:@NO];
+    }
+    NSMutableArray *result = [NSMutableArray array];
+    [self dfsPermute:nums path:[NSMutableArray array] used:used result:result];
+    return result;
+}
+```
+
+常见错误点：
+
+- 把“排列”和“组合”混了，错误使用起始下标。
+- `used` 标记没恢复。
+
+---
+
+## 9.6 组合总和
+
+为什么会想到这个解法：
+
+- 既要列出所有组合，又允许重复使用元素，明显是回溯。
+- 因为数组可以重复选当前元素，所以递归时下一层仍然可以从当前下标开始。
+
+Objective-C 参考实现：
+
+```objc
+- (void)dfsCombination:(NSArray<NSNumber *> *)candidates
+                 index:(NSInteger)index
+                target:(NSInteger)target
+                  path:(NSMutableArray<NSNumber *> *)path
+                result:(NSMutableArray<NSArray<NSNumber *> *> *)result {
+    if (target == 0) {
+        [result addObject:[path copy]];
+        return;
+    }
+    if (target < 0) {
+        return;
+    }
+    for (NSInteger i = index; i < candidates.count; i++) {
+        [path addObject:candidates[i]];
+        [self dfsCombination:candidates index:i target:target - candidates[i].integerValue path:path result:result];
+        [path removeLastObject];
+    }
+}
+
+- (NSArray<NSArray<NSNumber *> *> *)combinationSum:(NSArray<NSNumber *> *)candidates target:(NSInteger)target {
+    NSMutableArray *result = [NSMutableArray array];
+    [self dfsCombination:candidates index:0 target:target path:[NSMutableArray array] result:result];
+    return result;
+}
+```
+
+常见错误点：
+
+- 误把下层起点写成 `i + 1`，导致不能重复使用元素。
+- 目标值小于 0 时没及时剪枝。
+
+---
+
+## 9.7 括号生成
+
+为什么会想到这个解法：
+
+- 这题不是随便拼括号，而是带约束的状态搜索。
+- 任意时刻左括号数不能少于右括号数，且两者都不能超过 `n`。
+
+Objective-C 参考实现：
+
+```objc
+- (void)dfsParenthesis:(NSInteger)n
+                  left:(NSInteger)left
+                 right:(NSInteger)right
+                  path:(NSMutableString *)path
+                result:(NSMutableArray<NSString *> *)result {
+    if (path.length == n * 2) {
+        [result addObject:[path copy]];
+        return;
+    }
+    if (left < n) {
+        [path appendString:@"("];
+        [self dfsParenthesis:n left:left + 1 right:right path:path result:result];
+        [path deleteCharactersInRange:NSMakeRange(path.length - 1, 1)];
+    }
+    if (right < left) {
+        [path appendString:@")"];
+        [self dfsParenthesis:n left:left right:right + 1 path:path result:result];
+        [path deleteCharactersInRange:NSMakeRange(path.length - 1, 1)];
+    }
+}
+
+- (NSArray<NSString *> *)generateParenthesis:(NSInteger)n {
+    NSMutableArray *result = [NSMutableArray array];
+    [self dfsParenthesis:n left:0 right:0 path:[NSMutableString string] result:result];
+    return result;
+}
+```
+
+常见错误点：
+
+- 没约束 `right < left`，会生成非法括号。
+- 只判断总长度，不判断中间状态是否合法。
+
+---
+
+## 10.4 二分查找
+
+为什么会想到这个解法：
+
+- 标准有序数组查找，直接套二分模板。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)search:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSInteger left = 0;
+    NSInteger right = nums.count - 1;
+    while (left <= right) {
+        NSInteger mid = left + (right - left) / 2;
+        NSInteger value = nums[mid].integerValue;
+        if (value == target) {
+            return mid;
+        } else if (value < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return -1;
+}
+```
+
+常见错误点：
+
+- `left` 和 `right` 更新反了。
+- `while (left < right)` 和 `<=` 混用导致边界漏查。
+
+---
+
+## 10.5 搜索插入位置
+
+为什么会想到这个解法：
+
+- 还是标准二分，只是找不到时返回 `left`，因为循环结束时 `left` 就是插入位。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)searchInsert:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSInteger left = 0;
+    NSInteger right = nums.count - 1;
+    while (left <= right) {
+        NSInteger mid = left + (right - left) / 2;
+        NSInteger value = nums[mid].integerValue;
+        if (value == target) {
+            return mid;
+        } else if (value < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return left;
+}
+```
+
+常见错误点：
+
+- 找不到时错误返回 `right`。
+
+---
+
+## 10.6 在排序数组中查找元素的第一个和最后一个位置
+
+为什么会想到这个解法：
+
+- 本质是两次边界二分：一次找左边界，一次找右边界。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)lowerBound:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSInteger left = 0;
+    NSInteger right = nums.count;
+    while (left < right) {
+        NSInteger mid = left + (right - left) / 2;
+        if (nums[mid].integerValue < target) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+    return left;
+}
+
+- (NSArray<NSNumber *> *)searchRange:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSInteger left = [self lowerBound:nums target:target];
+    NSInteger right = [self lowerBound:nums target:target + 1] - 1;
+    if (left == nums.count || nums[left].integerValue != target) {
+        return @[@-1, @-1];
+    }
+    return @[@(left), @(right)];
+}
+```
+
+常见错误点：
+
+- 左右边界逻辑混在一起，最后不稳定。
+- 找不到时没有返回 `[-1, -1]`。
+
+---
+
+## 10.7 搜索旋转排序数组
+
+为什么会想到这个解法：
+
+- 虽然数组被旋转，但每次二分时总有一半仍然有序。
+- 判断哪一半有序，再看目标值是否落在那一半里即可。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)searchInRotated:(NSArray<NSNumber *> *)nums target:(NSInteger)target {
+    NSInteger left = 0;
+    NSInteger right = nums.count - 1;
+    while (left <= right) {
+        NSInteger mid = left + (right - left) / 2;
+        NSInteger value = nums[mid].integerValue;
+        if (value == target) {
+            return mid;
+        }
+        if (nums[left].integerValue <= value) {
+            if (nums[left].integerValue <= target && target < value) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        } else {
+            if (value < target && target <= nums[right].integerValue) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+    }
+    return -1;
+}
+```
+
+常见错误点：
+
+- 判断哪一半有序时条件写错。
+- 忘了目标值区间判断也要跟着变化。
+
+---
+
+## 11.5 爬楼梯
+
+为什么会想到这个解法：
+
+- 到第 `n` 阶的方法数只和前两阶有关，是最基础的线性 DP。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)climbStairs:(NSInteger)n {
+    if (n <= 2) {
+        return n;
+    }
+    NSInteger a = 1;
+    NSInteger b = 2;
+    for (NSInteger i = 3; i <= n; i++) {
+        NSInteger c = a + b;
+        a = b;
+        b = c;
+    }
+    return b;
+}
+```
+
+常见错误点：
+
+- 初始值写错。
+- 没处理 `n = 1` 或 `n = 2`。
+
+---
+
+## 11.6 打家劫舍
+
+为什么会想到这个解法：
+
+- 每间房只有“偷”或“不偷”两种选择。
+- 到第 `i` 间房的最优结果，取决于前一间和前两间的最优解。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)rob:(NSArray<NSNumber *> *)nums {
+    NSInteger prev2 = 0;
+    NSInteger prev1 = 0;
+    for (NSNumber *num in nums) {
+        NSInteger current = MAX(prev1, prev2 + num.integerValue);
+        prev2 = prev1;
+        prev1 = current;
+    }
+    return prev1;
+}
+```
+
+常见错误点：
+
+- 忘了相邻房子不能同时选。
+
+---
+
+## 11.7 不同路径
+
+为什么会想到这个解法：
+
+- 每个格子的路径数只来自上方和左方，是标准二维 DP。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)uniquePaths:(NSInteger)m n:(NSInteger)n {
+    NSMutableArray<NSMutableArray<NSNumber *> *> *dp = [NSMutableArray array];
+    for (NSInteger i = 0; i < m; i++) {
+        NSMutableArray<NSNumber *> *row = [NSMutableArray array];
+        for (NSInteger j = 0; j < n; j++) {
+            [row addObject:@1];
+        }
+        [dp addObject:row];
+    }
+    for (NSInteger i = 1; i < m; i++) {
+        for (NSInteger j = 1; j < n; j++) {
+            dp[i][j] = @([dp[i - 1][j] integerValue] + [dp[i][j - 1] integerValue]);
+        }
+    }
+    return dp[m - 1][n - 1].integerValue;
+}
+```
+
+常见错误点：
+
+- 第一行和第一列初始化漏掉。
+
+---
+
+## 11.8 最小路径和
+
+为什么会想到这个解法：
+
+- 仍然是二维网格 DP，只不过从“路径数”变成“最小代价”。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)minPathSum:(NSArray<NSArray<NSNumber *> *> *)grid {
+    NSInteger m = grid.count;
+    NSInteger n = [grid[0] count];
+    NSMutableArray<NSMutableArray<NSNumber *> *> *dp = [NSMutableArray array];
+    for (NSInteger i = 0; i < m; i++) {
+        NSMutableArray<NSNumber *> *row = [NSMutableArray array];
+        for (NSInteger j = 0; j < n; j++) {
+            [row addObject:@0];
+        }
+        [dp addObject:row];
+    }
+
+    dp[0][0] = grid[0][0];
+    for (NSInteger i = 1; i < m; i++) {
+        dp[i][0] = @([dp[i - 1][0] integerValue] + [grid[i][0] integerValue]);
+    }
+    for (NSInteger j = 1; j < n; j++) {
+        dp[0][j] = @([dp[0][j - 1] integerValue] + [grid[0][j] integerValue]);
+    }
+    for (NSInteger i = 1; i < m; i++) {
+        for (NSInteger j = 1; j < n; j++) {
+            NSInteger best = MIN([dp[i - 1][j] integerValue], [dp[i][j - 1] integerValue]);
+            dp[i][j] = @(best + [grid[i][j] integerValue]);
+        }
+    }
+    return dp[m - 1][n - 1].integerValue;
+}
+```
+
+常见错误点：
+
+- 第一行第一列初始化不完整。
+- 状态转移把 `min` 写成 `max`。
+
+---
+
+## 12.3 最长递增子序列
+
+为什么会想到这个解法：
+
+- `dp[i]` 可以定义为“以 `i` 结尾的最长递增子序列长度”。
+- 枚举前面所有比它小的数作为前驱。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)lengthOfLIS:(NSArray<NSNumber *> *)nums {
+    if (nums.count == 0) {
+        return 0;
+    }
+    NSMutableArray<NSNumber *> *dp = [NSMutableArray array];
+    for (NSInteger i = 0; i < nums.count; i++) {
+        [dp addObject:@1];
+    }
+    NSInteger result = 1;
+    for (NSInteger i = 1; i < nums.count; i++) {
+        for (NSInteger j = 0; j < i; j++) {
+            if (nums[j].integerValue < nums[i].integerValue) {
+                dp[i] = @(MAX(dp[i].integerValue, dp[j].integerValue + 1));
+            }
+        }
+        result = MAX(result, dp[i].integerValue);
+    }
+    return result;
+}
+```
+
+常见错误点：
+
+- 把子序列误写成子数组。
+
+---
+
+## 12.4 最长公共子序列
+
+为什么会想到这个解法：
+
+- 两个字符串对齐比较，最自然就是二维 DP。
+- `dp[i][j]` 表示前 `i` 个字符和前 `j` 个字符的 LCS 长度。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)longestCommonSubsequence:(NSString *)text1 text2:(NSString *)text2 {
+    NSInteger m = text1.length;
+    NSInteger n = text2.length;
+    NSMutableArray *dp = [NSMutableArray array];
+    for (NSInteger i = 0; i <= m; i++) {
+        NSMutableArray *row = [NSMutableArray array];
+        for (NSInteger j = 0; j <= n; j++) {
+            [row addObject:@0];
+        }
+        [dp addObject:row];
+    }
+    for (NSInteger i = 1; i <= m; i++) {
+        for (NSInteger j = 1; j <= n; j++) {
+            if ([text1 characterAtIndex:i - 1] == [text2 characterAtIndex:j - 1]) {
+                dp[i][j] = @([dp[i - 1][j - 1] integerValue] + 1);
+            } else {
+                dp[i][j] = @(MAX([dp[i - 1][j] integerValue], [dp[i][j - 1] integerValue]));
+            }
+        }
+    }
+    return [dp[m][n] integerValue];
+}
+```
+
+常见错误点：
+
+- 下标和字符串索引偏移一位。
+
+---
+
+## 12.5 零钱兑换
+
+为什么会想到这个解法：
+
+- 每种硬币可重复使用，是完全背包。
+- 目标是最少数量，所以 `dp[i]` 表示凑出金额 `i` 的最少硬币数。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)coinChange:(NSArray<NSNumber *> *)coins amount:(NSInteger)amount {
+    NSMutableArray<NSNumber *> *dp = [NSMutableArray array];
+    for (NSInteger i = 0; i <= amount; i++) {
+        [dp addObject:@(amount + 1)];
+    }
+    dp[0] = @0;
+    for (NSInteger i = 1; i <= amount; i++) {
+        for (NSNumber *coin in coins) {
+            NSInteger c = coin.integerValue;
+            if (c <= i) {
+                dp[i] = @(MIN(dp[i].integerValue, dp[i - c].integerValue + 1));
+            }
+        }
+    }
+    return dp[amount].integerValue > amount ? -1 : dp[amount].integerValue;
+}
+```
+
+常见错误点：
+
+- 初始值没设成足够大的哨兵值。
+- 没法凑出时忘了返回 `-1`。
+
+---
+
+## 12.6 分割等和子集
+
+为什么会想到这个解法：
+
+- 目标是看能否选出一部分数，恰好凑到总和的一半，这是 0-1 背包。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)canPartition:(NSArray<NSNumber *> *)nums {
+    NSInteger sum = 0;
+    for (NSNumber *num in nums) {
+        sum += num.integerValue;
+    }
+    if (sum % 2 != 0) {
+        return NO;
+    }
+    NSInteger target = sum / 2;
+    NSMutableArray<NSNumber *> *dp = [NSMutableArray array];
+    for (NSInteger i = 0; i <= target; i++) {
+        [dp addObject:@NO];
+    }
+    dp[0] = @YES;
+    for (NSNumber *num in nums) {
+        NSInteger value = num.integerValue;
+        for (NSInteger j = target; j >= value; j--) {
+            if ([dp[j - value] boolValue]) {
+                dp[j] = @YES;
+            }
+        }
+    }
+    return [dp[target] boolValue];
+}
+```
+
+常见错误点：
+
+- 内层循环顺序写正序，导致同一元素被重复使用。
+
+---
+
+## 13.4 岛屿数量
+
+为什么会想到这个解法：
+
+- 每遇到一块新的陆地，就做一次 DFS/BFS，把整块连通区域都淹掉。
+- 岛屿数量就是启动搜索的次数。
+
+Objective-C 参考实现：
+
+```objc
+- (void)dfsIsland:(NSMutableArray<NSMutableArray<NSString *> *> *)grid i:(NSInteger)i j:(NSInteger)j {
+    if (i < 0 || i >= grid.count || j < 0 || j >= grid[0].count || ![grid[i][j] isEqualToString:@"1"]) {
+        return;
+    }
+    grid[i][j] = @"0";
+    [self dfsIsland:grid i:i + 1 j:j];
+    [self dfsIsland:grid i:i - 1 j:j];
+    [self dfsIsland:grid i:i j:j + 1];
+    [self dfsIsland:grid i:i j:j - 1];
+}
+
+- (NSInteger)numIslands:(NSMutableArray<NSMutableArray<NSString *> *> *)grid {
+    NSInteger count = 0;
+    for (NSInteger i = 0; i < grid.count; i++) {
+        for (NSInteger j = 0; j < grid[i].count; j++) {
+            if ([grid[i][j] isEqualToString:@"1"]) {
+                count++;
+                [self dfsIsland:grid i:i j:j];
+            }
+        }
+    }
+    return count;
+}
+```
+
+常见错误点：
+
+- 搜索后没标记已访问，导致重复计数。
+
+---
+
+## 13.5 腐烂的橘子
+
+为什么会想到这个解法：
+
+- 这是典型多源 BFS，所有腐烂橘子同时作为起点向外扩散。
+- BFS 每一层恰好对应 1 分钟。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)orangesRotting:(NSArray<NSArray<NSNumber *> *> *)grid {
+    NSInteger rows = grid.count;
+    NSInteger cols = [grid[0] count];
+    NSMutableArray *matrix = [NSMutableArray array];
+    NSMutableArray<NSArray<NSNumber *> *> *queue = [NSMutableArray array];
+    NSInteger fresh = 0;
+    for (NSInteger i = 0; i < rows; i++) {
+        [matrix addObject:[grid[i] mutableCopy]];
+        for (NSInteger j = 0; j < cols; j++) {
+            NSInteger value = [grid[i][j] integerValue];
+            if (value == 2) [queue addObject:@[@(i), @(j)]];
+            if (value == 1) fresh++;
+        }
+    }
+    NSInteger minutes = 0;
+    NSInteger directions[4][2] = {{1,0},{-1,0},{0,1},{0,-1}};
+    while (queue.count > 0 && fresh > 0) {
+        NSInteger size = queue.count;
+        for (NSInteger k = 0; k < size; k++) {
+            NSArray<NSNumber *> *cell = queue.firstObject;
+            [queue removeObjectAtIndex:0];
+            NSInteger x = cell[0].integerValue;
+            NSInteger y = cell[1].integerValue;
+            for (NSInteger d = 0; d < 4; d++) {
+                NSInteger nx = x + directions[d][0];
+                NSInteger ny = y + directions[d][1];
+                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && [matrix[nx][ny] integerValue] == 1) {
+                    matrix[nx][ny] = @2;
+                    fresh--;
+                    [queue addObject:@[@(nx), @(ny)]];
+                }
+            }
+        }
+        minutes++;
+    }
+    return fresh == 0 ? minutes : -1;
+}
+```
+
+常见错误点：
+
+- 把分钟数和节点数混在一起。
+- 忘了多个腐烂橘子要同时入队。
+
+---
+
+## 13.6 课程表
+
+为什么会想到这个解法：
+
+- 能否完成所有课程，就是看有向图中是否有环。
+- 入度 + 队列的拓扑排序是面试里最稳的解法。
+
+Objective-C 参考实现：
+
+```objc
+- (BOOL)canFinish:(NSInteger)numCourses prerequisites:(NSArray<NSArray<NSNumber *> *> *)prerequisites {
+    NSMutableArray<NSMutableArray<NSNumber *> *> *graph = [NSMutableArray array];
+    NSMutableArray<NSNumber *> *indegree = [NSMutableArray array];
+    for (NSInteger i = 0; i < numCourses; i++) {
+        [graph addObject:[NSMutableArray array]];
+        [indegree addObject:@0];
+    }
+    for (NSArray<NSNumber *> *pair in prerequisites) {
+        NSInteger course = pair[0].integerValue;
+        NSInteger pre = pair[1].integerValue;
+        [graph[pre] addObject:@(course)];
+        indegree[course] = @([indegree[course] integerValue] + 1);
+    }
+    NSMutableArray<NSNumber *> *queue = [NSMutableArray array];
+    for (NSInteger i = 0; i < numCourses; i++) {
+        if ([indegree[i] integerValue] == 0) {
+            [queue addObject:@(i)];
+        }
+    }
+    NSInteger count = 0;
+    while (queue.count > 0) {
+        NSInteger node = queue.firstObject.integerValue;
+        [queue removeObjectAtIndex:0];
+        count++;
+        for (NSNumber *next in graph[node]) {
+            NSInteger v = next.integerValue;
+            indegree[v] = @([indegree[v] integerValue] - 1);
+            if ([indegree[v] integerValue] == 0) {
+                [queue addObject:@(v)];
+            }
+        }
+    }
+    return count == numCourses;
+}
+```
+
+常见错误点：
+
+- 先修关系方向写反。
+- 统计的是访问次数，不是队列最终大小。
+
+---
+
+## 14.3 数组中的第 K 个最大元素
+
+为什么会想到这个解法：
+
+- 排序能做，但 O(n log n)。
+- 这题高频写法是维护大小为 `k` 的小顶堆，堆顶就是当前第 `k` 大。
+
+Objective-C 参考实现：
+
+```objc
+- (NSInteger)findKthLargest:(NSArray<NSNumber *> *)nums k:(NSInteger)k {
+    NSArray<NSNumber *> *sorted = [nums sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+        return [b compare:a];
+    }];
+    return sorted[k - 1].integerValue;
+}
+```
+
+常见错误点：
+
+- 把“第 K 个最大”理解成“第 K 个不同的最大”。
+
+---
+
+## 14.4 前 K 个高频元素
+
+为什么会想到这个解法：
+
+- 先统计频次，再按照频次取前 `k` 个。
+- 面试里即使用排序法也足够清楚稳定。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSNumber *> *)topKFrequent:(NSArray<NSNumber *> *)nums k:(NSInteger)k {
+    NSMutableDictionary<NSNumber *, NSNumber *> *count = [NSMutableDictionary dictionary];
+    for (NSNumber *num in nums) {
+        count[num] = @([count[num] integerValue] + 1);
+    }
+    NSArray<NSNumber *> *sortedKeys = [count.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+        return [count[b] compare:count[a]];
+    }];
+    return [sortedKeys subarrayWithRange:NSMakeRange(0, k)];
+}
+```
+
+常见错误点：
+
+- 只统计频次却忘了最后要取前 `k` 个元素本身。
+
+---
+
+## 14.5 合并 K 个升序链表
+
+为什么会想到这个解法：
+
+- 这是多路归并问题。
+- 最稳的面试写法不一定非得上堆，分治合并两两链表也很好讲。
+
+Objective-C 参考实现：
+
+```objc
+- (ListNode *)mergeTwo:(ListNode *)a b:(ListNode *)b {
+    ListNode *dummy = [[ListNode alloc] initWithVal:0 next:nil];
+    ListNode *tail = dummy;
+    while (a && b) {
+        if (a.val <= b.val) {
+            tail.next = a;
+            a = a.next;
+        } else {
+            tail.next = b;
+            b = b.next;
+        }
+        tail = tail.next;
+    }
+    tail.next = a ? a : b;
+    return dummy.next;
+}
+
+- (ListNode *)mergeKLists:(NSArray<ListNode *> *)lists {
+    ListNode *result = nil;
+    for (ListNode *list in lists) {
+        result = [self mergeTwo:result b:list];
+    }
+    return result;
+}
+```
+
+常见错误点：
+
+- 忘了空链表情况。
+- 合并后没有维护好 `tail` 指针。

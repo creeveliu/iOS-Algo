@@ -1224,6 +1224,31 @@ NSLog(@"result = %@", result);
 - 先写递归通常更稳。
 - 如果面试官追问，再补充迭代。
 
+二叉树题最小节点定义：
+
+```objc
+@interface TreeNode : NSObject
+@property (nonatomic, assign) NSInteger val;
+@property (nonatomic, strong, nullable) TreeNode *left;
+@property (nonatomic, strong, nullable) TreeNode *right;
+- (instancetype)initWithVal:(NSInteger)val left:(TreeNode * _Nullable)left right:(TreeNode * _Nullable)right;
+@end
+
+@implementation TreeNode
+
+- (instancetype)initWithVal:(NSInteger)val left:(TreeNode * _Nullable)left right:(TreeNode * _Nullable)right {
+    self = [super init];
+    if (self) {
+        _val = val;
+        _left = left;
+        _right = right;
+    }
+    return self;
+}
+
+@end
+```
+
 ### 7.5 经典题：二叉树的最大深度
 
 题目描述：给定一棵二叉树，返回它的最大深度。最大深度是从根节点到最远叶子节点的最长路径上的节点数。
@@ -1232,6 +1257,30 @@ NSLog(@"result = %@", result);
 
 - 递归返回值
 - 左右子树取最大
+
+示例：
+
+- 输入：`[3,9,20,null,null,15,7]`
+- 输出：`3`
+
+方法名定义：
+
+```objc
+- (NSInteger)maxDepth:(TreeNode *)root;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n15 = [[TreeNode alloc] initWithVal:15 left:nil right:nil];
+TreeNode *n7 = [[TreeNode alloc] initWithVal:7 left:nil right:nil];
+TreeNode *n20 = [[TreeNode alloc] initWithVal:20 left:n15 right:n7];
+TreeNode *n9 = [[TreeNode alloc] initWithVal:9 left:nil right:nil];
+TreeNode *root = [[TreeNode alloc] initWithVal:3 left:n9 right:n20];
+NSLog(@"depth = %ld", (long)[self maxDepth:root]);
+```
+
+参考答案：见 [答案手册 7.5 二叉树的最大深度](./ios-algorithm-interview-handbook-answers#75-二叉树的最大深度)
 
 ### 7.6 经典题：对称二叉树
 
@@ -1242,6 +1291,32 @@ NSLog(@"result = %@", result);
 - 镜像比较
 - 递归比较两棵子树
 
+示例：
+
+- 输入：`[1,2,2,3,4,4,3]`
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)isSymmetric:(TreeNode *)root;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n3a = [[TreeNode alloc] initWithVal:3 left:nil right:nil];
+TreeNode *n4a = [[TreeNode alloc] initWithVal:4 left:nil right:nil];
+TreeNode *n4b = [[TreeNode alloc] initWithVal:4 left:nil right:nil];
+TreeNode *n3b = [[TreeNode alloc] initWithVal:3 left:nil right:nil];
+TreeNode *left = [[TreeNode alloc] initWithVal:2 left:n3a right:n4a];
+TreeNode *right = [[TreeNode alloc] initWithVal:2 left:n4b right:n3b];
+TreeNode *root = [[TreeNode alloc] initWithVal:1 left:left right:right];
+NSLog(@"symmetric = %@", [self isSymmetric:root] ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 7.6 对称二叉树](./ios-algorithm-interview-handbook-answers#76-对称二叉树)
+
 ### 7.7 经典题：二叉树的层序遍历
 
 题目描述：给定一棵二叉树，按从上到下、从左到右逐层返回节点值。
@@ -1251,6 +1326,30 @@ NSLog(@"result = %@", result);
 - 队列
 - 分层处理
 
+示例：
+
+- 输入：`[3,9,20,null,null,15,7]`
+- 输出：`[[3],[9,20],[15,7]]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)levelOrder:(TreeNode *)root;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n15 = [[TreeNode alloc] initWithVal:15 left:nil right:nil];
+TreeNode *n7 = [[TreeNode alloc] initWithVal:7 left:nil right:nil];
+TreeNode *n20 = [[TreeNode alloc] initWithVal:20 left:n15 right:n7];
+TreeNode *n9 = [[TreeNode alloc] initWithVal:9 left:nil right:nil];
+TreeNode *root = [[TreeNode alloc] initWithVal:3 left:n9 right:n20];
+NSLog(@"levels = %@", [self levelOrder:root]);
+```
+
+参考答案：见 [答案手册 7.7 二叉树的层序遍历](./ios-algorithm-interview-handbook-answers#77-二叉树的层序遍历)
+
 ### 7.8 经典题：翻转二叉树
 
 题目描述：给定一棵二叉树，将每个节点的左右子树交换，返回翻转后的根节点。
@@ -1258,6 +1357,33 @@ NSLog(@"result = %@", result);
 知识点：
 
 - 递归交换左右子树
+
+示例：
+
+- 输入：`[4,2,7,1,3,6,9]`
+- 输出：`[4,7,2,9,6,3,1]`
+
+方法名定义：
+
+```objc
+- (TreeNode *)invertTree:(TreeNode *)root;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n1 = [[TreeNode alloc] initWithVal:1 left:nil right:nil];
+TreeNode *n3 = [[TreeNode alloc] initWithVal:3 left:nil right:nil];
+TreeNode *n6 = [[TreeNode alloc] initWithVal:6 left:nil right:nil];
+TreeNode *n9 = [[TreeNode alloc] initWithVal:9 left:nil right:nil];
+TreeNode *left = [[TreeNode alloc] initWithVal:2 left:n1 right:n3];
+TreeNode *right = [[TreeNode alloc] initWithVal:7 left:n6 right:n9];
+TreeNode *root = [[TreeNode alloc] initWithVal:4 left:left right:right];
+TreeNode *newRoot = [self invertTree:root];
+NSLog(@"root after invert = %ld", (long)newRoot.val);
+```
+
+参考答案：见 [答案手册 7.8 翻转二叉树](./ios-algorithm-interview-handbook-answers#78-翻转二叉树)
 
 ### 7.9 本章小结与模板整理
 
@@ -1311,6 +1437,28 @@ BST 的核心性质：
 - 中序遍历递增
 - 上下界约束
 
+示例：
+
+- 输入：`[2,1,3]`
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)isValidBST:(TreeNode *)root;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *left = [[TreeNode alloc] initWithVal:1 left:nil right:nil];
+TreeNode *right = [[TreeNode alloc] initWithVal:3 left:nil right:nil];
+TreeNode *root = [[TreeNode alloc] initWithVal:2 left:left right:right];
+NSLog(@"is valid bst = %@", [self isValidBST:root] ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 8.4 验证二叉搜索树](./ios-algorithm-interview-handbook-answers#84-验证二叉搜索树)
+
 ### 8.5 经典题：二叉搜索树中的搜索
 
 题目描述：给定二叉搜索树的根节点和一个值 `val`，在树中找到值等于 `val` 的节点并返回该节点；如果不存在则返回 `nil`。
@@ -1318,6 +1466,31 @@ BST 的核心性质：
 知识点：
 
 - 利用 BST 性质剪枝
+
+示例：
+
+- 输入：BST = `[4,2,7,1,3]`, `val = 2`
+- 输出：以值 `2` 为根的子树
+
+方法名定义：
+
+```objc
+- (TreeNode *)searchBST:(TreeNode *)root val:(NSInteger)val;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n1 = [[TreeNode alloc] initWithVal:1 left:nil right:nil];
+TreeNode *n3 = [[TreeNode alloc] initWithVal:3 left:nil right:nil];
+TreeNode *n7 = [[TreeNode alloc] initWithVal:7 left:nil right:nil];
+TreeNode *left = [[TreeNode alloc] initWithVal:2 left:n1 right:n3];
+TreeNode *root = [[TreeNode alloc] initWithVal:4 left:left right:n7];
+TreeNode *node = [self searchBST:root val:2];
+NSLog(@"search result = %ld", (long)node.val);
+```
+
+参考答案：见 [答案手册 8.5 二叉搜索树中的搜索](./ios-algorithm-interview-handbook-answers#85-二叉搜索树中的搜索)
 
 ### 8.6 经典题：路径总和
 
@@ -1328,6 +1501,34 @@ BST 的核心性质：
 - 递归减目标值
 - 叶子节点终止判断
 
+示例：
+
+- 输入：`root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22`
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)hasPathSum:(TreeNode *)root targetSum:(NSInteger)targetSum;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n7 = [[TreeNode alloc] initWithVal:7 left:nil right:nil];
+TreeNode *n2 = [[TreeNode alloc] initWithVal:2 left:nil right:nil];
+TreeNode *n11 = [[TreeNode alloc] initWithVal:11 left:n7 right:n2];
+TreeNode *n13 = [[TreeNode alloc] initWithVal:13 left:nil right:nil];
+TreeNode *n1 = [[TreeNode alloc] initWithVal:1 left:nil right:nil];
+TreeNode *n4r = [[TreeNode alloc] initWithVal:4 left:nil right:n1];
+TreeNode *n4l = [[TreeNode alloc] initWithVal:4 left:n11 right:nil];
+TreeNode *n8 = [[TreeNode alloc] initWithVal:8 left:n13 right:n4r];
+TreeNode *root = [[TreeNode alloc] initWithVal:5 left:n4l right:n8];
+NSLog(@"has path sum = %@", [self hasPathSum:root targetSum:22] ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 8.6 路径总和](./ios-algorithm-interview-handbook-answers#86-路径总和)
+
 ### 8.7 经典题：二叉树的最近公共祖先
 
 题目描述：给定一棵二叉树以及其中两个节点 `p` 和 `q`，找出它们的最近公共祖先。最近公共祖先指的是离这两个节点最近、且同时是它们祖先的那个节点。
@@ -1335,6 +1536,35 @@ BST 的核心性质：
 知识点：
 
 - 分治递归
+
+示例：
+
+- 输入：`root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1`
+- 输出：`3`
+
+方法名定义：
+
+```objc
+- (TreeNode *)lowestCommonAncestor:(TreeNode *)root p:(TreeNode *)p q:(TreeNode *)q;
+```
+
+调用示例代码：
+
+```objc
+TreeNode *n6 = [[TreeNode alloc] initWithVal:6 left:nil right:nil];
+TreeNode *n7 = [[TreeNode alloc] initWithVal:7 left:nil right:nil];
+TreeNode *n4 = [[TreeNode alloc] initWithVal:4 left:nil right:nil];
+TreeNode *n2 = [[TreeNode alloc] initWithVal:2 left:n7 right:n4];
+TreeNode *n0 = [[TreeNode alloc] initWithVal:0 left:nil right:nil];
+TreeNode *n8 = [[TreeNode alloc] initWithVal:8 left:nil right:nil];
+TreeNode *p = [[TreeNode alloc] initWithVal:5 left:n6 right:n2];
+TreeNode *q = [[TreeNode alloc] initWithVal:1 left:n0 right:n8];
+TreeNode *root = [[TreeNode alloc] initWithVal:3 left:p right:q];
+TreeNode *ancestor = [self lowestCommonAncestor:root p:p q:q];
+NSLog(@"ancestor = %ld", (long)ancestor.val);
+```
+
+参考答案：见 [答案手册 8.7 二叉树的最近公共祖先](./ios-algorithm-interview-handbook-answers#87-二叉树的最近公共祖先)
 
 ### 8.8 本章小结与模板整理
 
@@ -1391,6 +1621,26 @@ BST 的核心性质：
 - 选或不选
 - 路径收集
 
+示例：
+
+- 输入：`nums = [1,2,3]`
+- 输出：`[[],[1],[2],[3],[1,2],[1,3],[2,3],[1,2,3]]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)subsets:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSArray<NSNumber *> *> *result = [self subsets:@[@1, @2, @3]];
+NSLog(@"subsets = %@", result);
+```
+
+参考答案：见 [答案手册 9.4 子集](./ios-algorithm-interview-handbook-answers#94-子集)
+
 ### 9.5 经典题：全排列
 
 题目描述：给定一个不含重复数字的数组，返回它的所有可能排列。
@@ -1399,6 +1649,26 @@ BST 的核心性质：
 
 - `used` 数组或集合
 - 每层选择一个未使用元素
+
+示例：
+
+- 输入：`nums = [1,2,3]`
+- 输出：`[[1,2,3],[1,3,2],[2,1,3]...]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)permute:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSArray<NSNumber *> *> *result = [self permute:@[@1, @2, @3]];
+NSLog(@"permute = %@", result);
+```
+
+参考答案：见 [答案手册 9.5 全排列](./ios-algorithm-interview-handbook-answers#95-全排列)
 
 ### 9.6 经典题：组合总和
 
@@ -1409,6 +1679,26 @@ BST 的核心性质：
 - 剪枝
 - 同层 / 同枝概念
 
+示例：
+
+- 输入：`candidates = [2,3,6,7], target = 7`
+- 输出：`[[2,2,3],[7]]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)combinationSum:(NSArray<NSNumber *> *)candidates target:(NSInteger)target;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSArray<NSNumber *> *> *result = [self combinationSum:@[@2, @3, @6, @7] target:7];
+NSLog(@"combination sum = %@", result);
+```
+
+参考答案：见 [答案手册 9.6 组合总和](./ios-algorithm-interview-handbook-answers#96-组合总和)
+
 ### 9.7 经典题：括号生成
 
 题目描述：给定整数 `n`，表示括号对数，请生成所有由 `n` 对括号组成且有效的括号组合。
@@ -1417,6 +1707,26 @@ BST 的核心性质：
 
 - 状态约束
 - 左右括号数量控制
+
+示例：
+
+- 输入：`n = 3`
+- 输出：`["((()))","(()())","(())()","()(())","()()()"]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSString *> *)generateParenthesis:(NSInteger)n;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSString *> *result = [self generateParenthesis:3];
+NSLog(@"parenthesis = %@", result);
+```
+
+参考答案：见 [答案手册 9.7 括号生成](./ios-algorithm-interview-handbook-answers#97-括号生成)
 
 ### 9.8 本章小结与模板整理
 
@@ -1470,6 +1780,26 @@ BST 的核心性质：
 
 - 稳定写出标准模板
 
+示例：
+
+- 输入：`nums = [-1,0,3,5,9,12], target = 9`
+- 输出：`4`
+
+方法名定义：
+
+```objc
+- (NSInteger)search:(NSArray<NSNumber *> *)nums target:(NSInteger)target;
+```
+
+调用示例代码：
+
+```objc
+NSInteger index = [self search:@[@-1, @0, @3, @5, @9, @12] target:9];
+NSLog(@"index = %ld", (long)index);
+```
+
+参考答案：见 [答案手册 10.4 二分查找](./ios-algorithm-interview-handbook-answers#104-二分查找)
+
 ### 10.5 经典题：搜索插入位置
 
 题目描述：给定一个升序数组和目标值 `target`，如果目标值存在则返回其下标；如果不存在，返回它应当被插入的位置。
@@ -1477,6 +1807,26 @@ BST 的核心性质：
 目标：
 
 - 理解“找不到时应该插在哪里”
+
+示例：
+
+- 输入：`nums = [1,3,5,6], target = 5`
+- 输出：`2`
+
+方法名定义：
+
+```objc
+- (NSInteger)searchInsert:(NSArray<NSNumber *> *)nums target:(NSInteger)target;
+```
+
+调用示例代码：
+
+```objc
+NSInteger index = [self searchInsert:@[@1, @3, @5, @6] target:5];
+NSLog(@"insert index = %ld", (long)index);
+```
+
+参考答案：见 [答案手册 10.5 搜索插入位置](./ios-algorithm-interview-handbook-answers#105-搜索插入位置)
 
 ### 10.6 经典题：在排序数组中查找元素的第一个和最后一个位置
 
@@ -1486,6 +1836,26 @@ BST 的核心性质：
 
 - 熟悉边界二分
 
+示例：
+
+- 输入：`nums = [5,7,7,8,8,10], target = 8`
+- 输出：`[3,4]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSNumber *> *)searchRange:(NSArray<NSNumber *> *)nums target:(NSInteger)target;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSNumber *> *range = [self searchRange:@[@5, @7, @7, @8, @8, @10] target:8];
+NSLog(@"range = %@", range);
+```
+
+参考答案：见 [答案手册 10.6 在排序数组中查找元素的第一个和最后一个位置](./ios-algorithm-interview-handbook-answers#106-在排序数组中查找元素的第一个和最后一个位置)
+
 ### 10.7 经典题：搜索旋转排序数组
 
 题目描述：给定一个经过旋转的升序数组和目标值 `target`，请在 O(log n) 时间内找到目标值下标；如果不存在返回 `-1`。
@@ -1493,6 +1863,26 @@ BST 的核心性质：
 目标：
 
 - 识别局部有序区间
+
+示例：
+
+- 输入：`nums = [4,5,6,7,0,1,2], target = 0`
+- 输出：`4`
+
+方法名定义：
+
+```objc
+- (NSInteger)searchInRotated:(NSArray<NSNumber *> *)nums target:(NSInteger)target;
+```
+
+调用示例代码：
+
+```objc
+NSInteger index = [self searchInRotated:@[@4, @5, @6, @7, @0, @1, @2] target:0];
+NSLog(@"index = %ld", (long)index);
+```
+
+参考答案：见 [答案手册 10.7 搜索旋转排序数组](./ios-algorithm-interview-handbook-answers#107-搜索旋转排序数组)
 
 ### 10.8 本章小结与模板整理
 
@@ -1553,6 +1943,25 @@ BST 的核心性质：
 
 - 最简单的状态转移题
 
+示例：
+
+- 输入：`n = 3`
+- 输出：`3`
+
+方法名定义：
+
+```objc
+- (NSInteger)climbStairs:(NSInteger)n;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"ways = %ld", (long)[self climbStairs:3]);
+```
+
+参考答案：见 [答案手册 11.5 爬楼梯](./ios-algorithm-interview-handbook-answers#115-爬楼梯)
+
 ### 11.6 经典题：打家劫舍
 
 题目描述：给定一个数组，`nums[i]` 表示第 `i` 间房屋的金额。相邻房屋不能在同一晚偷取，求在不触发警报的情况下最多能偷到多少钱。
@@ -1560,6 +1969,25 @@ BST 的核心性质：
 知识点：
 
 - 选当前 or 不选当前
+
+示例：
+
+- 输入：`nums = [1,2,3,1]`
+- 输出：`4`
+
+方法名定义：
+
+```objc
+- (NSInteger)rob:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"max rob = %ld", (long)[self rob:@[@1, @2, @3, @1]]);
+```
+
+参考答案：见 [答案手册 11.6 打家劫舍](./ios-algorithm-interview-handbook-answers#116-打家劫舍)
 
 ### 11.7 经典题：不同路径
 
@@ -1569,6 +1997,25 @@ BST 的核心性质：
 
 - 网格 DP
 
+示例：
+
+- 输入：`m = 3, n = 7`
+- 输出：`28`
+
+方法名定义：
+
+```objc
+- (NSInteger)uniquePaths:(NSInteger)m n:(NSInteger)n;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"paths = %ld", (long)[self uniquePaths:3 n:7]);
+```
+
+参考答案：见 [答案手册 11.7 不同路径](./ios-algorithm-interview-handbook-answers#117-不同路径)
+
 ### 11.8 经典题：最小路径和
 
 题目描述：给定一个非负整数网格，每次只能向右或向下移动一步，求从左上角到右下角路径上的数字总和最小值。
@@ -1576,6 +2023,30 @@ BST 的核心性质：
 知识点：
 
 - 路径最优值转移
+
+示例：
+
+- 输入：`grid = [[1,3,1],[1,5,1],[4,2,1]]`
+- 输出：`7`
+
+方法名定义：
+
+```objc
+- (NSInteger)minPathSum:(NSArray<NSArray<NSNumber *> *> *)grid;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSArray<NSNumber *> *> *grid = @[
+  @[@1, @3, @1],
+  @[@1, @5, @1],
+  @[@4, @2, @1]
+];
+NSLog(@"min path sum = %ld", (long)[self minPathSum:grid]);
+```
+
+参考答案：见 [答案手册 11.8 最小路径和](./ios-algorithm-interview-handbook-answers#118-最小路径和)
 
 ### 11.9 本章小结与模板整理
 
@@ -1618,6 +2089,25 @@ BST 的核心性质：
 - 一维 DP
 - 枚举前驱状态
 
+示例：
+
+- 输入：`nums = [10,9,2,5,3,7,101,18]`
+- 输出：`4`
+
+方法名定义：
+
+```objc
+- (NSInteger)lengthOfLIS:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"lis = %ld", (long)[self lengthOfLIS:@[@10, @9, @2, @5, @3, @7, @101, @18]]);
+```
+
+参考答案：见 [答案手册 12.3 最长递增子序列](./ios-algorithm-interview-handbook-answers#123-最长递增子序列)
+
 ### 12.4 经典题：最长公共子序列
 
 题目描述：给定两个字符串，返回它们的最长公共子序列长度。子序列要求相对顺序一致，但不要求连续。
@@ -1626,6 +2116,25 @@ BST 的核心性质：
 
 - 二维 DP
 - 两字符串匹配
+
+示例：
+
+- 输入：`text1 = "abcde", text2 = "ace"`
+- 输出：`3`
+
+方法名定义：
+
+```objc
+- (NSInteger)longestCommonSubsequence:(NSString *)text1 text2:(NSString *)text2;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"lcs = %ld", (long)[self longestCommonSubsequence:@"abcde" text2:@"ace"]);
+```
+
+参考答案：见 [答案手册 12.4 最长公共子序列](./ios-algorithm-interview-handbook-answers#124-最长公共子序列)
 
 ### 12.5 经典题：零钱兑换
 
@@ -1636,6 +2145,25 @@ BST 的核心性质：
 - 完全背包
 - 最少数量
 
+示例：
+
+- 输入：`coins = [1,2,5], amount = 11`
+- 输出：`3`
+
+方法名定义：
+
+```objc
+- (NSInteger)coinChange:(NSArray<NSNumber *> *)coins amount:(NSInteger)amount;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"coin count = %ld", (long)[self coinChange:@[@1, @2, @5] amount:11]);
+```
+
+参考答案：见 [答案手册 12.5 零钱兑换](./ios-algorithm-interview-handbook-answers#125-零钱兑换)
+
 ### 12.6 经典题：分割等和子集
 
 题目描述：给定一个只包含正整数的数组，判断是否可以把它分成两个子集，使得两个子集的元素和相等。
@@ -1644,6 +2172,25 @@ BST 的核心性质：
 
 - 0-1 背包
 - 能否恰好装满
+
+示例：
+
+- 输入：`nums = [1,5,11,5]`
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)canPartition:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"can partition = %@", [self canPartition:@[@1, @5, @11, @5]] ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 12.6 分割等和子集](./ios-algorithm-interview-handbook-answers#126-分割等和子集)
 
 ### 12.7 本章小结与模板整理
 
@@ -1695,6 +2242,31 @@ BFS 适合：
 - DFS / BFS
 - 连通块计数
 
+示例：
+
+- 输入：二维网格中有 3 个独立陆地区域
+- 输出：`3`
+
+方法名定义：
+
+```objc
+- (NSInteger)numIslands:(NSMutableArray<NSMutableArray<NSString *> *> *)grid;
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray *grid = [@[
+  [@[@"1", @"1", @"0", @"0", @"0"] mutableCopy],
+  [@[@"1", @"1", @"0", @"0", @"0"] mutableCopy],
+  [@[@"0", @"0", @"1", @"0", @"0"] mutableCopy],
+  [@[@"0", @"0", @"0", @"1", @"1"] mutableCopy]
+] mutableCopy];
+NSLog(@"islands = %ld", (long)[self numIslands:grid]);
+```
+
+参考答案：见 [答案手册 13.4 岛屿数量](./ios-algorithm-interview-handbook-answers#134-岛屿数量)
+
 ### 13.5 经典题：腐烂的橘子
 
 题目描述：在一个网格中，`0` 表示空格，`1` 表示新鲜橘子，`2` 表示腐烂橘子。每分钟，腐烂橘子会让相邻的新鲜橘子腐烂。求全部橘子都腐烂所需的最短时间；如果无法全部腐烂，返回 `-1`。
@@ -1703,6 +2275,30 @@ BFS 适合：
 
 - 多源 BFS
 - 分层扩散
+
+示例：
+
+- 输入：`grid = [[2,1,1],[1,1,0],[0,1,1]]`
+- 输出：`4`
+
+方法名定义：
+
+```objc
+- (NSInteger)orangesRotting:(NSArray<NSArray<NSNumber *> *> *)grid;
+```
+
+调用示例代码：
+
+```objc
+NSArray *grid = @[
+  @[@2, @1, @1],
+  @[@1, @1, @0],
+  @[@0, @1, @1]
+];
+NSLog(@"minutes = %ld", (long)[self orangesRotting:grid]);
+```
+
+参考答案：见 [答案手册 13.5 腐烂的橘子](./ios-algorithm-interview-handbook-answers#135-腐烂的橘子)
 
 ### 13.6 经典题：课程表
 
@@ -1713,6 +2309,26 @@ BFS 适合：
 - 有向图
 - 拓扑排序
 - 入度统计
+
+示例：
+
+- 输入：`numCourses = 2, prerequisites = [[1,0]]`
+- 输出：`true`
+
+方法名定义：
+
+```objc
+- (BOOL)canFinish:(NSInteger)numCourses prerequisites:(NSArray<NSArray<NSNumber *> *> *)prerequisites;
+```
+
+调用示例代码：
+
+```objc
+NSArray<NSArray<NSNumber *> *> *prerequisites = @[@[@1, @0]];
+NSLog(@"can finish = %@", [self canFinish:2 prerequisites:prerequisites] ? @"YES" : @"NO");
+```
+
+参考答案：见 [答案手册 13.6 课程表](./ios-algorithm-interview-handbook-answers#136-课程表)
 
 ### 13.7 本章小结与模板整理
 
@@ -1760,6 +2376,25 @@ BFS 适合：
 - 堆
 - Top K
 
+示例：
+
+- 输入：`nums = [3,2,1,5,6,4], k = 2`
+- 输出：`5`
+
+方法名定义：
+
+```objc
+- (NSInteger)findKthLargest:(NSArray<NSNumber *> *)nums k:(NSInteger)k;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"kth largest = %ld", (long)[self findKthLargest:@[@3, @2, @1, @5, @6, @4] k:2]);
+```
+
+参考答案：见 [答案手册 14.3 数组中的第 K 个最大元素](./ios-algorithm-interview-handbook-answers#143-数组中的第-k-个最大元素)
+
 ### 14.4 经典题：前 K 个高频元素
 
 题目描述：给定一个整数数组和整数 `k`，返回其中出现频率前 `k` 高的元素。
@@ -1767,6 +2402,25 @@ BFS 适合：
 知识点：
 
 - 哈希计数 + 堆
+
+示例：
+
+- 输入：`nums = [1,1,1,2,2,3], k = 2`
+- 输出：`[1,2]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSNumber *> *)topKFrequent:(NSArray<NSNumber *> *)nums k:(NSInteger)k;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"top k = %@", [self topKFrequent:@[@1, @1, @1, @2, @2, @3] k:2]);
+```
+
+参考答案：见 [答案手册 14.4 前 K 个高频元素](./ios-algorithm-interview-handbook-answers#144-前-k-个高频元素)
 
 ### 14.5 经典题：合并 K 个升序链表
 
@@ -1776,6 +2430,29 @@ BFS 适合：
 
 - 堆
 - 多路归并
+
+示例：
+
+- 输入：`lists = [[1,4,5],[1,3,4],[2,6]]`
+- 输出：`1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6`
+
+方法名定义：
+
+```objc
+- (ListNode *)mergeKLists:(NSArray<ListNode *> *)lists;
+```
+
+调用示例代码：
+
+```objc
+ListNode *a = [[ListNode alloc] initWithVal:1 next:[[ListNode alloc] initWithVal:4 next:[[ListNode alloc] initWithVal:5 next:nil]]];
+ListNode *b = [[ListNode alloc] initWithVal:1 next:[[ListNode alloc] initWithVal:3 next:[[ListNode alloc] initWithVal:4 next:nil]]];
+ListNode *c = [[ListNode alloc] initWithVal:2 next:[[ListNode alloc] initWithVal:6 next:nil]];
+ListNode *merged = [self mergeKLists:@[a, b, c]];
+NSLog(@"merged head = %ld", (long)merged.val);
+```
+
+参考答案：见 [答案手册 14.5 合并 K 个升序链表](./ios-algorithm-interview-handbook-answers#145-合并-k-个升序链表)
 
 ### 14.6 本章小结与模板整理
 
