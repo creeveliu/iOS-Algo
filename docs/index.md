@@ -400,7 +400,98 @@ NSLog(@"colors = %@", nums);
 
 参考答案：见 [答案手册 1.13 颜色分类](./ios-algorithm-interview-handbook-answers#113-颜色分类)
 
-### 1.14 本章小结与模板整理
+### 1.14 经典题：手写插入排序
+
+题目描述：给定一个整数数组 `nums`，请你使用插入排序将它按升序原地排列。
+
+知识点：
+
+- 手写排序
+- 插入排序
+- 局部有序
+
+示例：
+
+- 输入：`nums = [5,2,4,6,1,3]`
+- 输出：`[1,2,3,4,5,6]`
+
+方法名定义：
+
+```objc
+- (void)insertionSort:(NSMutableArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums = [@[@5, @2, @4, @6, @1, @3] mutableCopy];
+[self insertionSort:nums];
+NSLog(@"insertion sorted = %@", nums);
+```
+
+参考答案：见 [答案手册 1.14 手写插入排序](./ios-algorithm-interview-handbook-answers#114-手写插入排序)
+
+### 1.15 经典题：手写快速排序
+
+题目描述：给定一个整数数组 `nums`，请你手写快速排序，将数组按升序原地排列。
+
+知识点：
+
+- 手写排序
+- 快速排序
+- 分治
+
+示例：
+
+- 输入：`nums = [3,6,8,10,1,2,1]`
+- 输出：`[1,1,2,3,6,8,10]`
+
+方法名定义：
+
+```objc
+- (void)quickSortArray:(NSMutableArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums = [@[@3, @6, @8, @10, @1, @2, @1] mutableCopy];
+[self quickSortArray:nums];
+NSLog(@"quick sorted = %@", nums);
+```
+
+参考答案：见 [答案手册 1.15 手写快速排序](./ios-algorithm-interview-handbook-answers#115-手写快速排序)
+
+### 1.16 经典题：手写归并排序
+
+题目描述：给定一个整数数组 `nums`，请你手写归并排序，将数组按升序排列后返回。
+
+知识点：
+
+- 手写排序
+- 归并排序
+- 分治
+
+示例：
+
+- 输入：`nums = [5,1,1,2,0,0]`
+- 输出：`[0,0,1,1,2,5]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSNumber *> *)mergeSortArray:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"merge sorted = %@", [self mergeSortArray:@[@5, @1, @1, @2, @0, @0]]);
+```
+
+参考答案：见 [答案手册 1.16 手写归并排序](./ios-algorithm-interview-handbook-answers#116-手写归并排序)
+
+### 1.17 本章小结与模板整理
 
 本章你需要掌握：
 
@@ -408,6 +499,7 @@ NSLog(@"colors = %@", nums);
 - 快慢指针
 - 排序复杂度和稳定性
 - Objective-C 常用排序写法
+- 插入 / 快排 / 归并这三种手写排序模板
 - 前缀和的基本意义
 - 遍历时维护最优值
 
@@ -419,6 +511,9 @@ NSLog(@"colors = %@", nums);
 - `912. 排序数组`
 - `56. 合并区间`
 - `75. 颜色分类`
+- `手写插入排序`
+- `手写快速排序`
+- `手写归并排序`
 
 ---
 ## 第 2 章 字符串基础

@@ -236,6 +236,148 @@ Objective-C 参考实现：
 
 ---
 
+## 1.14 手写插入排序
+
+为什么会想到这个解法：
+
+- 插入排序最适合建立“前面部分已经有序”的感觉。
+- 对于每个新元素，把它插入到前面正确的位置即可。
+- 这题代码短、边界少，很适合面试里手写排序的第一题。
+
+Objective-C 参考实现：
+
+```objc
+- (void)insertionSort:(NSMutableArray<NSNumber *> *)nums {
+    for (NSInteger i = 1; i < nums.count; i++) {
+        NSNumber *current = nums[i];
+        NSInteger j = i - 1;
+        while (j >= 0 && nums[j].integerValue > current.integerValue) {
+            nums[j + 1] = nums[j];
+            j--;
+        }
+        nums[j + 1] = current;
+    }
+}
+```
+
+常见错误点：
+
+- `while` 结束后，插入位置应该是 `j + 1`，不是 `j`。
+- 先覆盖元素，再去取当前值，会把待插入元素弄丢。
+
+---
+
+## 1.15 手写快速排序
+
+为什么会想到这个解法：
+
+- 快排是最常被追问的手写排序，核心是“选基准 + 分区 + 递归”。
+- 面试里不一定追求最优基准策略，但一定要把分区过程写稳。
+- 只要你能讲清楚“左边都小于等于 pivot，右边都大于等于 pivot”，思路就对了。
+
+Objective-C 参考实现：
+
+```objc
+- (void)quickSortArray:(NSMutableArray<NSNumber *> *)nums {
+    [self quickSort:nums left:0 right:nums.count - 1];
+}
+
+- (void)quickSort:(NSMutableArray<NSNumber *> *)nums left:(NSInteger)left right:(NSInteger)right {
+    if (left >= right) {
+        return;
+    }
+
+    NSInteger pivot = nums[left].integerValue;
+    NSInteger i = left;
+    NSInteger j = right;
+
+    while (i < j) {
+        while (i < j && nums[j].integerValue >= pivot) {
+            j--;
+        }
+        while (i < j && nums[i].integerValue <= pivot) {
+            i++;
+        }
+        if (i < j) {
+            [nums exchangeObjectAtIndex:i withObjectAtIndex:j];
+        }
+    }
+
+    nums[left] = nums[i];
+    nums[i] = @(pivot);
+
+    [self quickSort:nums left:left right:i - 1];
+    [self quickSort:nums left:i + 1 right:right];
+}
+```
+
+常见错误点：
+
+- 分区结束后忘了把 `pivot` 放回正确位置。
+- 递归边界写错，容易死循环或漏排。
+- `i`、`j` 的比较条件不对，会在重复元素场景下出 bug。
+
+---
+
+## 1.16 手写归并排序
+
+为什么会想到这个解法：
+
+- 归并排序是最经典的分治排序，特别适合顺带讲“稳定排序”和“额外空间”。
+- 核心不是交换，而是把两个有序子数组合并成一个更大的有序数组。
+- 如果面试官问你“快排和归并怎么选”，这题就是最好的落点。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSNumber *> *)mergeSortArray:(NSArray<NSNumber *> *)nums {
+    if (nums.count <= 1) {
+        return nums;
+    }
+
+    NSInteger mid = nums.count / 2;
+    NSArray<NSNumber *> *left = [self mergeSortArray:[nums subarrayWithRange:NSMakeRange(0, mid)]];
+    NSArray<NSNumber *> *right = [self mergeSortArray:[nums subarrayWithRange:NSMakeRange(mid, nums.count - mid)]];
+    return [self mergeLeft:left right:right];
+}
+
+- (NSArray<NSNumber *> *)mergeLeft:(NSArray<NSNumber *> *)left right:(NSArray<NSNumber *> *)right {
+    NSMutableArray<NSNumber *> *result = [NSMutableArray array];
+    NSInteger i = 0;
+    NSInteger j = 0;
+
+    while (i < left.count && j < right.count) {
+        if (left[i].integerValue <= right[j].integerValue) {
+            [result addObject:left[i]];
+            i++;
+        } else {
+            [result addObject:right[j]];
+            j++;
+        }
+    }
+
+    while (i < left.count) {
+        [result addObject:left[i]];
+        i++;
+    }
+
+    while (j < right.count) {
+        [result addObject:right[j]];
+        j++;
+    }
+
+    return result;
+}
+```
+
+常见错误点：
+
+- `mid` 两边切分范围写错，导致遗漏元素或越界。
+- 合并完一边后，忘了把另一边剩余元素接上。
+- 把归并排序误写成“不断交换”的思路，失去它的本质。
+
+---
+
 ## 2.4 验证回文串
 
 为什么会想到这个解法：
