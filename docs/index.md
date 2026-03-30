@@ -2630,6 +2630,171 @@ OC 面试手写注意点：
 
 ---
 
+## 第 18 章 排序专题
+
+### 18.1 为什么排序值得单独学
+
+排序不是一类“只会出原题”的知识点，而是很多题目的前置操作。
+
+你在面试里经常会遇到这种场景：
+
+- 先排序，再双指针
+- 先排序，再合并区间
+- 先排序，再做去重
+- 用排序作为比哈希更稳的解法
+
+所以排序本身要会，排序后的“题型迁移”更要会。
+
+### 18.2 常见排序复杂度和稳定性
+
+建议至少记住下面这些：
+
+- 冒泡排序：`O(n^2)`，稳定
+- 选择排序：`O(n^2)`，不稳定
+- 插入排序：`O(n^2)`，稳定
+- 快速排序：平均 `O(n log n)`，不稳定
+- 归并排序：`O(n log n)`，稳定
+- 堆排序：`O(n log n)`，不稳定
+
+面试里最常见追问：
+
+- 哪些排序是稳定的
+- 快排和归并的区别
+- 为什么很多题先排序再做
+
+### 18.3 Objective-C 里的排序写法
+
+如果题目重点不在“手写排序算法”，你完全可以先用系统排序 API：
+
+```objc
+NSArray<NSNumber *> *sorted = [nums sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+    return [a compare:b];
+}];
+```
+
+如果要求降序：
+
+```objc
+NSArray<NSNumber *> *sorted = [nums sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+    return [b compare:a];
+}];
+```
+
+面试表达建议：
+
+- 如果题目重点在后续逻辑，可以先用系统排序说明主流程
+- 如果面试官继续追问，再补充快排 / 归并的实现思路
+
+### 18.4 经典题：排序数组
+
+题目描述：给你一个整数数组 `nums`，请你将该数组升序排列后返回。
+
+知识点：
+
+- 排序基础
+- 比较器
+- 系统排序 API
+
+示例：
+
+- 输入：`nums = [5,2,3,1]`
+- 输出：`[1,2,3,5]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSNumber *> *)sortArray:(NSArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSLog(@"sorted = %@", [self sortArray:@[@5, @2, @3, @1]]);
+```
+
+参考答案：见 [答案手册 18.4 排序数组](./ios-algorithm-interview-handbook-answers#184-排序数组)
+
+### 18.5 经典题：合并区间
+
+题目描述：给定一个区间数组 `intervals`，其中 `intervals[i] = [start_i, end_i]`。请你合并所有重叠的区间，并返回一个不重叠的区间数组。
+
+知识点：
+
+- 排序
+- 区间合并
+
+示例：
+
+- 输入：`intervals = [[1,3],[2,6],[8,10],[15,18]]`
+- 输出：`[[1,6],[8,10],[15,18]]`
+
+方法名定义：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)mergeIntervals:(NSArray<NSArray<NSNumber *> *> *)intervals;
+```
+
+调用示例代码：
+
+```objc
+NSArray *intervals = @[
+    @[@1, @3],
+    @[@2, @6],
+    @[@8, @10],
+    @[@15, @18]
+];
+NSLog(@"merged = %@", [self mergeIntervals:intervals]);
+```
+
+参考答案：见 [答案手册 18.5 合并区间](./ios-algorithm-interview-handbook-answers#185-合并区间)
+
+### 18.6 经典题：颜色分类
+
+题目描述：给定一个包含红色、白色和蓝色，一共 `n` 个元素的数组 `nums`，原地对它们进行排序，使得相同颜色的元素相邻，并按照红、白、蓝顺序排列。这里用 `0`、`1` 和 `2` 分别表示红、白、蓝。
+
+知识点：
+
+- 三路划分
+- 双指针
+- 原地排序
+
+示例：
+
+- 输入：`nums = [2,0,2,1,1,0]`
+- 输出：`[0,0,1,1,2,2]`
+
+方法名定义：
+
+```objc
+- (void)sortColors:(NSMutableArray<NSNumber *> *)nums;
+```
+
+调用示例代码：
+
+```objc
+NSMutableArray<NSNumber *> *nums = [@[@2, @0, @2, @1, @1, @0] mutableCopy];
+[self sortColors:nums];
+NSLog(@"colors = %@", nums);
+```
+
+参考答案：见 [答案手册 18.6 颜色分类](./ios-algorithm-interview-handbook-answers#186-颜色分类)
+
+### 18.7 本章小结与模板整理
+
+这一章要掌握的不只是“会排”，更重要的是：
+
+- 知道什么时候先排序
+- 知道排序后常接双指针 / 区间合并
+- 知道稳定性和复杂度怎么答
+
+推荐题单：
+
+- `912. 排序数组`
+- `56. 合并区间`
+- `75. 颜色分类`
+
+---
+
 ## 附录 A Objective-C 刷题模板速查
 
 ### A.1 数组与字符串模板
@@ -2806,6 +2971,9 @@ for (NSInteger i = 1; i <= n; i++) {
 - `322. 零钱兑换`
 - `347. 前 K 个高频元素`
 - `416. 分割等和子集`
+- `56. 合并区间`
+- `75. 颜色分类`
+- `912. 排序数组`
 - `739. 每日温度`
 - `994. 腐烂的橘子`
 - `1143. 最长公共子序列`
@@ -2833,6 +3001,8 @@ for (NSInteger i = 1; i <= n; i++) {
 - `198. 打家劫舍`
 - `200. 岛屿数量`
 - `209. 长度最小的子数组`
+- `56. 合并区间`
+- `75. 颜色分类`
 - `322. 零钱兑换`
 
 ### B.4 错题复盘记录模板

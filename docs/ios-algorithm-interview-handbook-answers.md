@@ -2019,3 +2019,113 @@ Objective-C 参考实现：
 
 - 忘了空链表情况。
 - 合并后没有维护好 `tail` 指针。
+
+---
+
+## 18.4 排序数组
+
+为什么会想到这个解法：
+
+- 这是一道标准排序模板题，核心不是花哨技巧，而是把数组按升序排好。
+- 如果面试官没要求手写快排或归并，先用系统排序 API 把主逻辑写清楚是最稳的。
+- 如果对方继续追问，再补充快排平均 `O(n log n)`、归并稳定但要额外空间，就已经够用了。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSNumber *> *)sortArray:(NSArray<NSNumber *> *)nums {
+    return [nums sortedArrayUsingComparator:^NSComparisonResult(NSNumber *a, NSNumber *b) {
+        return [a compare:b];
+    }];
+}
+```
+
+常见错误点：
+
+- 比较器顺序写反，结果变成降序。
+- 返回的是新数组，却误以为原数组会被修改。
+
+---
+
+## 18.5 合并区间
+
+为什么会想到这个解法：
+
+- 区间题看到“合并重叠区间”，第一反应就应该是先按起点排序。
+- 排序后，重叠区间一定会挨在一起，这样只要维护当前合并区间即可。
+- 这类题的核心模式是：`先排序 -> 再线性扫描`。
+
+Objective-C 参考实现：
+
+```objc
+- (NSArray<NSArray<NSNumber *> *> *)mergeIntervals:(NSArray<NSArray<NSNumber *> *> *)intervals {
+    if (intervals.count == 0) {
+        return @[];
+    }
+
+    NSArray<NSArray<NSNumber *> *> *sorted = [intervals sortedArrayUsingComparator:^NSComparisonResult(NSArray<NSNumber *> *a, NSArray<NSNumber *> *b) {
+        return [a[0] compare:b[0]];
+    }];
+
+    NSMutableArray<NSMutableArray<NSNumber *> *> *result = [NSMutableArray array];
+    NSMutableArray<NSNumber *> *current = [sorted[0] mutableCopy];
+
+    for (NSInteger i = 1; i < sorted.count; i++) {
+        NSArray<NSNumber *> *next = sorted[i];
+        if (next[0].integerValue <= current[1].integerValue) {
+            NSInteger end = MAX(current[1].integerValue, next[1].integerValue);
+            current[1] = @(end);
+        } else {
+            [result addObject:[current mutableCopy]];
+            current = [next mutableCopy];
+        }
+    }
+
+    [result addObject:[current mutableCopy]];
+    return result;
+}
+```
+
+常见错误点：
+
+- 没有先排序，直接合并会漏区间。
+- 循环结束后忘了把最后一个 `current` 放进结果。
+
+---
+
+## 18.6 颜色分类
+
+为什么会想到这个解法：
+
+- 题目要求原地排序，而且数组里只有 `0`、`1`、`2` 三种值。
+- 这种特征很适合用三路划分，也就是荷兰国旗问题的写法。
+- 本质上不是普通排序，而是把数组切成 `<1`、`=1`、`>1` 三段。
+
+Objective-C 参考实现：
+
+```objc
+- (void)sortColors:(NSMutableArray<NSNumber *> *)nums {
+    NSInteger left = 0;
+    NSInteger right = nums.count - 1;
+    NSInteger index = 0;
+
+    while (index <= right) {
+        NSInteger value = [nums[index] integerValue];
+        if (value == 0) {
+            [nums exchangeObjectAtIndex:index withObjectAtIndex:left];
+            left++;
+            index++;
+        } else if (value == 2) {
+            [nums exchangeObjectAtIndex:index withObjectAtIndex:right];
+            right--;
+        } else {
+            index++;
+        }
+    }
+}
+```
+
+常见错误点：
+
+- 遇到 `2` 交换到右边后，`index` 不能立刻加一，因为换回来的值还没看。
+- 把这题写成普通排序也能过，但面试官通常更想看你会不会三路划分。
