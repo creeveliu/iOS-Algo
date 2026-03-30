@@ -102,6 +102,30 @@
           )
           .join('');
 
+        const jumpToHeading = (headingId) => {
+          const target = document.getElementById(headingId);
+          if (!target) return;
+          const top = target.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top, behavior: 'auto' });
+          history.replaceState(null, '', `#${headingId}`);
+        };
+
+        chapterNav.addEventListener('click', (event) => {
+          const link = event.target.closest('a[data-target]');
+          if (!link) return;
+          event.preventDefault();
+          jumpToHeading(link.dataset.target);
+        });
+
+        quickIndex.addEventListener('click', (event) => {
+          const link = event.target.closest('a[href^="#"]');
+          if (!link) return;
+          const headingId = link.getAttribute('href').slice(1);
+          if (!headingId) return;
+          event.preventDefault();
+          jumpToHeading(headingId);
+        });
+
         const navLinks = [...chapterNav.querySelectorAll('.chapter-nav__link')];
         const observer = new IntersectionObserver(
           (entries) => {
